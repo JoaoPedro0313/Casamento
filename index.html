@@ -20,12 +20,14 @@ main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:c
 .hero{grid-column:1;grid-row:2;position:sticky;top:56px;align-self:start}
 #formSec,#doneSec,#loginSec{grid-column:2;grid-row:2;max-width:620px}
 .foot{grid-column:1/-1;grid-row:3}
-#adminSec{grid-column:1/-1;grid-row:2}
+#adminSec,#fotosSec{grid-column:1/-1;grid-row:2}
 }
 .hero{text-align:center;padding:40px 0 56px}
 .eyebrow{font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
 .hero::after{content:"";display:block;width:72px;height:1px;background:var(--gold);margin:44px auto 0}
 h1{font:400 clamp(60px,17vw,112px)/1.02 "Cormorant Garamond",Georgia,serif;margin:22px 0 28px}
+.mapa{display:inline-block;margin-top:22px;padding:10px 22px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font:500 13px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;background:rgba(255,255,255,.55)}
+.mapa:hover,.mapa:focus{background:var(--gold);color:#fff;outline:0}
 .count{display:flex;justify-content:center;gap:clamp(14px,4vw,34px);margin-top:40px}
 .count div{min-width:58px}
 .count b{display:block;font:400 clamp(38px,10vw,60px)/1 "Cormorant Garamond",Georgia,serif;color:var(--fg);font-variant-numeric:tabular-nums}
@@ -52,7 +54,7 @@ textarea{resize:vertical;min-height:64px}
 .done{text-align:center;padding:24px 0}
 .hide{display:none}
 .admin{padding-top:24px}
-.tabs{display:flex;gap:28px;justify-content:center;margin-bottom:8px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px 22px;justify-content:center;margin-bottom:8px;padding-right:0}
 .tabs.hide{display:none}
 .tabs button{background:none;border:0;font:400 12px Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);padding:8px 0;cursor:pointer;border-bottom:1px solid transparent}
 .tabs button.on{color:var(--fg);border-bottom-color:var(--gold)}
@@ -107,6 +109,14 @@ textarea{resize:vertical;min-height:64px}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .thumb button{position:absolute;top:3px;right:3px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(255,255,255,.9);color:var(--fg);font-size:15px;line-height:1;cursor:pointer;padding:0}
 #veu{padding:0;border:0}
+.cfg{max-width:980px}
+.cfg-grp{background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:16px;padding:22px 24px 6px;margin-bottom:16px}
+.cfg-grp>h3{font:500 11px Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 18px}
+.cfg-grid{display:grid;grid-template-columns:1fr;column-gap:28px}
+.cfg-grid .span2{grid-column:1/-1}
+@media (min-width:700px){.cfg-grid{grid-template-columns:1fr 1fr}}
+.cfg-save{position:sticky;bottom:0;display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),var(--bg) 35%)}
+.cfg-save .ok{margin:0}
 .foot .link{font-size:12px;opacity:.7}
 #loginSec .field{margin-bottom:22px}
 </style>
@@ -114,11 +124,12 @@ textarea{resize:vertical;min-height:64px}
 <body>
 <div id="bg" class="hide" aria-hidden="true"></div>
 <main>
-  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="sair" type="button">Sair</button></nav>
+  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="fotos" type="button">Fotos</button><button data-t="sair" type="button">Sair</button></nav>
   <section class="hero" id="heroSec">
     <div class="eyebrow">Vamos nos casar</div>
     <h1 id="noivos"></h1>
     <div class="meta" id="meta"></div>
+    <a class="mapa hide" id="mapaLink" target="_blank" rel="noopener">Ver localização no mapa</a>
     <div class="count hide" id="count" aria-live="off"></div>
   </section>
 
@@ -133,9 +144,7 @@ textarea{resize:vertical;min-height:64px}
     <input id="fam" type="hidden">
     <div id="restoForm">
     <div id="pessoas"></div>
-    <div class="relac" id="relac"></div>
-    <button class="link" id="add" type="button">+ adicionar pessoa</button>
-    <div class="field" style="margin-top:28px"><label for="msg">Recado para os noivos (opcional)</label><textarea id="msg"></textarea></div>
+    <div class="field" style="margin-top:12px"><label for="msg">Recado para os noivos (opcional)</label><textarea id="msg"></textarea></div>
     <button class="btn" id="enviar" type="button">Enviar confirmação</button>
     <div class="err" id="err"></div>
     </div>
@@ -163,25 +172,40 @@ textarea{resize:vertical;min-height:64px}
     <div id="lista"></div>
     <button class="link" id="csv" type="button" style="margin-top:20px">Baixar planilha (CSV)</button>
 
-    <div class="upl">
+    <div class="upl cfg">
       <h2>Dados do convite</h2>
-      <p class="hint">Edite as informações que aparecem no topo do convite.</p>
-      <div class="field"><label for="cfgNoivos">Nomes dos noivos</label><input id="cfgNoivos" placeholder="Ex.: Ana & Pedro" autocomplete="off"></div>
-      <div class="field"><label for="cfgData">Data</label><input id="cfgData" placeholder="Ex.: 12 de dezembro de 2026" autocomplete="off"></div>
-      <div class="field"><label for="cfgHora">Horário</label><input id="cfgHora" placeholder="Ex.: 16h30" autocomplete="off"></div>
-      <div class="field"><label for="cfgLocal">Local da cerimônia</label><input id="cfgLocal" placeholder="Ex.: Igreja Matriz" autocomplete="off"></div>
-      <div class="field"><label for="cfgCidade">Cidade</label><input id="cfgCidade" placeholder="Ex.: Jacobina, BA" autocomplete="off"></div>
-      <div class="field"><label for="cfgPrazo">Prazo para confirmar (opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
-      <div class="field"><label for="cfgZap">WhatsApp dos noivos (opcional, só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
-      <div class="field">
-        <label>Fotos de fundo (até 5)</label>
-        <div id="fotosLista"></div>
-        <label class="link" id="fotoAdd" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer">+ Adicionar fotos<input type="file" id="fotoArq" accept="image/*" multiple class="hide"></label>
-        <p class="hint" style="margin:10px 0 0">Com mais de uma foto, elas alternam sozinhas. As imagens são reduzidas automaticamente.</p>
+      <p class="hint">Edite as informações que aparecem no topo do convite. Nada vai ao ar até você tocar em Salvar.</p>
+
+      <div class="cfg-grp">
+        <h3>Quem e quando</h3>
+        <div class="cfg-grid">
+          <div class="field span2"><label for="cfgNoivos">Nomes dos noivos</label><input id="cfgNoivos" placeholder="Ex.: Ana & Pedro" autocomplete="off"></div>
+          <div class="field"><label for="cfgData">Data</label><input id="cfgData" placeholder="Ex.: 12 de dezembro de 2026" autocomplete="off"></div>
+          <div class="field"><label for="cfgHora">Horário</label><input id="cfgHora" placeholder="Ex.: 16h30" autocomplete="off"></div>
+        </div>
       </div>
-      <div class="field"><label for="veu">Véu claro sobre a foto (para o texto ficar legível)</label><input id="veu" type="range" min="30" max="95" value="75"></div>
-      <div class="acts"><button class="btn" id="salvarCfg" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar dados</button></div>
-      <div class="ok" id="cfgMsg"></div>
+
+      <div class="cfg-grp">
+        <h3>Onde</h3>
+        <div class="cfg-grid">
+          <div class="field"><label for="cfgLocal">Local da cerimônia</label><input id="cfgLocal" placeholder="Ex.: Igreja Matriz" autocomplete="off"></div>
+          <div class="field"><label for="cfgCidade">Cidade</label><input id="cfgCidade" placeholder="Ex.: Jacobina, BA" autocomplete="off"></div>
+          <div class="field span2"><label for="cfgMapa">Link do mapa (Google Maps)</label><input id="cfgMapa" placeholder="Cole o link do Google Maps" inputmode="url" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="cfg-grp">
+        <h3>Confirmações</h3>
+        <div class="cfg-grid">
+          <div class="field"><label for="cfgPrazo">Prazo para confirmar (opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
+          <div class="field"><label for="cfgZap">WhatsApp dos noivos (opcional, só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="cfg-save">
+        <button class="btn" id="salvarCfg" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar dados</button>
+        <div class="ok" id="cfgMsg"></div>
+      </div>
     </div>
 
     <div class="upl" id="grpBox">
@@ -211,6 +235,24 @@ textarea{resize:vertical;min-height:64px}
       <div class="ok" id="uplMsg"></div>
     </div>
   </section>
+  <section id="fotosSec" class="admin cfg hide">
+    <h2>Fotos da tela inicial</h2>
+    <p class="hint">As fotos aparecem ao fundo da tela inicial do convite. Com mais de uma, elas alternam sozinhas. Nada vai ao ar até você tocar em Salvar fotos.</p>
+    <div class="cfg-grp">
+      <h3>Fotos de fundo (até 5)</h3>
+      <div class="field">
+        <div id="fotosLista"></div>
+        <label class="link" id="fotoAdd" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer">+ Adicionar fotos<input type="file" id="fotoArq" accept="image/*" multiple class="hide"></label>
+        <p class="hint" style="margin:10px 0 0">As imagens são reduzidas automaticamente. Use fotos na horizontal para um resultado melhor no computador.</p>
+      </div>
+      <div class="field"><label for="veu">Véu claro sobre a foto (para o texto ficar legível)</label><input id="veu" type="range" min="30" max="95" value="75"></div>
+    </div>
+    <div class="cfg-save">
+      <button class="btn" id="salvarFotos" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar fotos</button>
+      <button class="link" id="verConvite" type="button">Ver como ficou no convite</button>
+      <div class="ok" id="fotosMsg"></div>
+    </div>
+  </section>
   <footer class="foot" id="foot"><button class="link" id="abrirLogin" type="button">Acesso dos noivos</button></footer>
 </main>
 
@@ -229,6 +271,7 @@ const C = {
   hora: "00h00",
   local: "Local da cerimônia",
   cidade: "Cidade, UF",
+  mapa: "https://maps.app.goo.gl/QECs1TYgHhq267C58",  // link do Google Maps do local
   prazo: "",            // ex.: "até 01 de novembro"
   whatsapp: ""          // opcional, só números com DDI: 5574999999999
 };
@@ -237,15 +280,17 @@ const $ = id => document.getElementById(id);
 let pessoas = [{nome:"", vai:true}];
 let enviado = null, convidados = [], vinculos = [], liberado = false;
 function atualizaForm(){ $("restoForm").classList.toggle("hide", convidados.length > 0 && !liberado); }
-function setTab(t){ const adm = t === "admin";
+function setTab(t){ const adm = t === "admin", fot = t === "fotos", fora = adm || fot;
   $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
-  $("heroSec").classList.toggle("hide", adm); $("adminSec").classList.toggle("hide", !adm);
-  $("formSec").classList.toggle("hide", adm || !!enviado); $("doneSec").classList.toggle("hide", adm || !enviado); $("loginSec").classList.add("hide"); }
+  $("heroSec").classList.toggle("hide", fora); $("adminSec").classList.toggle("hide", !adm); $("fotosSec").classList.toggle("hide", !fot);
+  $("formSec").classList.toggle("hide", fora || !!enviado); $("doneSec").classList.toggle("hide", fora || !enviado); $("loginSec").classList.add("hide"); }
 
 function desenhaHero(){
   $("noivos").textContent = C.noivos;
   $("meta").innerHTML = "";
   [[C.data, C.hora].filter(Boolean).join(" · "), C.local, C.cidade].filter(Boolean).forEach(t => { const d = document.createElement("div"); d.textContent = t; $("meta").appendChild(d); });
+  const mp = $("mapaLink"), u = String(C.mapa || "").trim();
+  if (/^https?:\/\//i.test(u)){ mp.href = u; mp.classList.remove("hide"); } else mp.classList.add("hide");
   $("prazo").textContent = C.prazo ? "Por favor, confirme " + C.prazo + ". Adicione cada pessoa da família e marque quem vai." : "Adicione cada pessoa da sua família e marque quem vai.";
 }
 desenhaHero();
@@ -275,7 +320,7 @@ function atualizaContador(){
   box.innerHTML = [[dias,"Dias"],[hrs,"Horas"],[min,"Min"],[seg,"Seg"]].map(([n,t]) => "<div><b>" + String(n).padStart(2,"0") + "</b><span>" + t + "</span></div>").join("");
 }
 atualizaContador(); setInterval(atualizaContador, 1000);
-const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["prazo","cfgPrazo"],["whatsapp","cfgZap"]];
+const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["mapa","cfgMapa"],["prazo","cfgPrazo"],["whatsapp","cfgZap"]];
 function aplicarCfg(c){
   CFG.forEach(([k,id]) => { if (typeof c[k] === "string") C[k] = c[k]; });
   desenhaHero();
@@ -302,7 +347,7 @@ function desenhaFotosAdmin(){
     const w = document.createElement("div"); w.className = "thumb";
     const im = document.createElement("img"); im.src = src; im.alt = "";
     const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remover foto");
-    x.onclick = () => { FOTOS.splice(i, 1); desenhaFundo(); desenhaFotosAdmin(); $("cfgMsg").textContent = "Toque em Salvar dados para publicar a mudança."; };
+    x.onclick = () => { FOTOS.splice(i, 1); desenhaFundo(); desenhaFotosAdmin(); $("fotosMsg").textContent = "Toque em Salvar fotos para publicar a mudança."; };
     w.append(im, x); box.appendChild(w);
   });
   $("fotoAdd").classList.toggle("hide", FOTOS.length >= MAX_FOTOS);
@@ -324,8 +369,9 @@ $("fotoArq").onchange = async e => {
   const arqs = [...e.target.files]; e.target.value = ""; let falhou = false;
   for (const f of arqs){ if (FOTOS.length >= MAX_FOTOS) break; try { FOTOS.push(await reduzFoto(f)); } catch(_) { falhou = true; } }
   desenhaFundo(); desenhaFotosAdmin();
-  $("cfgMsg").textContent = falhou ? "Alguma foto não pôde ser lida (use JPG ou PNG). As demais foram adicionadas — toque em Salvar dados." : "Toque em Salvar dados para publicar as fotos.";
+  $("fotosMsg").textContent = falhou ? "Alguma foto não pôde ser lida (use JPG ou PNG). As demais foram adicionadas — toque em Salvar fotos." : "Toque em Salvar fotos para publicar.";
 };
+$("verConvite").onclick = () => setTab("convite");
 $("veu").oninput = e => { VEU = +e.target.value; $("bg").style.setProperty("--veu", VEU / 100); };
 CFG.forEach(([k,id]) => { const el = $(id); if (el) el.value = C[k] || ""; });
 
@@ -353,10 +399,8 @@ function render(){
     if (pessoas.length > 1){ const x = document.createElement("button"); x.className = "rm"; x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label","Remover"); x.onclick = () => { pessoas.splice(i,1); render(); }; r.appendChild(x); }
     box.appendChild(r);
   });
-  renderRelac();
 }
 render(); atualizaForm();
-$("add").onclick = () => { pessoas.push({nome:"", vai:true}); render(); const ins = $("pessoas").querySelectorAll("input"); ins[ins.length-1].focus(); };
 
 function mostrarObrigado(d){
   const vao = d.pessoas.filter(p => p.vai).length;
@@ -505,19 +549,6 @@ function sugerir(p, box){
     box.appendChild(b);
   });
 }
-function relacionados(){
-  if (!convidados.length && !vinculos.length) return [];
-  const ja = new Set(pessoas.map(x => norm(x.nome))), out = new Map();
-  const grupos = [...convidados.map(g => g.pessoas), ...vinculos.map(v => v.nomes)];
-  pessoas.forEach(p => { const k = norm(p.nome); if (!k) return; grupos.forEach(ns => { if (ns.some(n => norm(n) === k)) ns.forEach(n => { const kn = norm(n); if (!ja.has(kn) && !out.has(kn)) out.set(kn, n); }); }); });
-  return [...out.values()];
-}
-function renderRelac(){
-  const box = $("relac"); box.innerHTML = "";
-  const rel = relacionados(); if (!rel.length) return;
-  const t = document.createElement("div"); t.className = "t"; t.textContent = "Adicionar também:"; box.appendChild(t);
-  rel.forEach(n => { const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = "+ " + curto(n); b.onclick = () => { const vazio = pessoas.find(x => !x.nome.trim()); if (vazio) vazio.nome = n; else pessoas.push({nome:n, vai:true}); render(); }; box.appendChild(b); });
-}
 function buscar(){
   const q = norm($("busca2").value), box = $("res"); box.innerHTML = "";
   if (q.length < 2) return;
@@ -570,7 +601,7 @@ async function carregaListas(){
   const [g, v] = await Promise.all([sb.from("convidados").select("familia,pessoas"), sb.from("vinculos").select("nomes")]);
   if (!g.error) convidados = g.data;
   if (!v.error) vinculos = v.data;
-  renderGrupos(); renderRelac();
+  renderGrupos();
   $("findBox").classList.toggle("hide", !convidados.length); atualizaForm(); buscar();
   if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render();
   $("uplMsg").textContent = ehDono && convidados.length ? convidados.length + " grupo(s) na lista." : "";
@@ -635,16 +666,18 @@ async function ativaAdmin(){
     else { $("listaTxt").value = ""; await carregaListas(); msgU(g.length + " grupo(s) e " + v.length + " vínculo(s) salvo(s)."); }
     $("subir").disabled = false;
   };
-  $("salvarCfg").onclick = async () => {
+  async function salvaConfig(btn, msg, ok){
     const cfg = {}; CFG.forEach(([k,id]) => cfg[k] = $(id).value.trim());
     if (cfg.whatsapp) cfg.whatsapp = cfg.whatsapp.replace(/\D/g, "");
     cfg.fotos = FOTOS; cfg.veu = VEU;
-    $("salvarCfg").disabled = true; $("cfgMsg").textContent = "Salvando…";
+    btn.disabled = true; msg.textContent = "Salvando…";
     const { error } = await sb.from("config").upsert({ id: "convite", dados: cfg });
-    if (error) $("cfgMsg").textContent = "Não foi possível salvar. Tente de novo.";
-    else { aplicarCfg(cfg); $("cfgMsg").textContent = "Dados salvos. O convite já mostra as novas informações."; }
-    $("salvarCfg").disabled = false;
-  };
+    if (error) msg.textContent = "Não foi possível salvar. Tente de novo.";
+    else { aplicarCfg(cfg); msg.textContent = ok; }
+    btn.disabled = false;
+  }
+  $("salvarCfg").onclick = () => salvaConfig($("salvarCfg"), $("cfgMsg"), "Dados salvos. O convite já mostra as novas informações.");
+  $("salvarFotos").onclick = () => salvaConfig($("salvarFotos"), $("fotosMsg"), "Fotos salvas. Já aparecem na tela inicial do convite.");
   let armL = false;
   $("limpar").onclick = async () => {
     if (!convidados.length && !vinculos.length) return;
