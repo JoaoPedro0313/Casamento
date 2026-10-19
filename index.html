@@ -23,10 +23,15 @@ main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:c
 #adminSec{grid-column:1/-1;grid-row:2}
 }
 .hero{text-align:center;padding:40px 0 56px}
-.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
-.hero::after{content:"";display:block;width:48px;height:1px;background:var(--gold);margin:36px auto 0}
-h1{font:400 clamp(44px,12vw,64px)/1.05 "Cormorant Garamond",Georgia,serif;margin:18px 0 22px}
-.meta{color:var(--mut);font-size:14px;line-height:1.9}
+.eyebrow{font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.hero::after{content:"";display:block;width:72px;height:1px;background:var(--gold);margin:44px auto 0}
+h1{font:400 clamp(60px,17vw,112px)/1.02 "Cormorant Garamond",Georgia,serif;margin:22px 0 28px}
+.count{display:flex;justify-content:center;gap:clamp(14px,4vw,34px);margin-top:40px}
+.count div{min-width:58px}
+.count b{display:block;font:400 clamp(38px,10vw,60px)/1 "Cormorant Garamond",Georgia,serif;color:var(--fg);font-variant-numeric:tabular-nums}
+.count span{display:block;margin-top:6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
+.count .hoje{min-width:0;font:400 clamp(32px,9vw,48px)/1.1 "Cormorant Garamond",Georgia,serif;color:var(--gold)}
+.meta{color:var(--mut);font-size:clamp(17px,4.6vw,21px);line-height:1.9}
 h2{font:500 26px "Cormorant Garamond",Georgia,serif;margin:0 0 6px}
 .sub{color:var(--mut);font-size:14px;margin:0 0 28px}
 label{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin:0 0 4px}
@@ -91,7 +96,8 @@ textarea{resize:vertical;min-height:64px}
 .grp-add input{flex:1;min-width:0;font-size:14px}
 .grp-btn{flex:none;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:8px 16px;font:500 12px Inter,sans-serif;cursor:pointer}
 
-.foot{text-align:center;margin-top:48px}
+.foot{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(14px,env(safe-area-inset-right,0px));z-index:5;margin:0;text-align:right}
+.foot .link{background:rgba(255,255,255,.7);border-radius:999px;padding:6px 12px;text-decoration:none;font-size:12px;letter-spacing:.04em}
 #bg{position:fixed;inset:0;z-index:0;pointer-events:none;--veu:.75}
 #bg div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
 #bg div.on{opacity:1}
@@ -113,6 +119,7 @@ textarea{resize:vertical;min-height:64px}
     <div class="eyebrow">Vamos nos casar</div>
     <h1 id="noivos"></h1>
     <div class="meta" id="meta"></div>
+    <div class="count hide" id="count" aria-live="off"></div>
   </section>
 
   <section id="formSec">
@@ -242,6 +249,32 @@ function desenhaHero(){
   $("prazo").textContent = C.prazo ? "Por favor, confirme " + C.prazo + ". Adicione cada pessoa da família e marque quem vai." : "Adicione cada pessoa da sua família e marque quem vai.";
 }
 desenhaHero();
+
+// ---- Contador regressivo (lê a data e o horário digitados nos dados do convite) ----
+const MESES_PT = ["janeiro","fevereiro","marco","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+function dataEvento(){
+  const sem = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const t = sem(C.data); let d, m, a;
+  let r = t.match(/(\d{1,2})\s*(?:de\s*)?([a-z]+)\s*(?:de\s*)?(\d{4})/);
+  if (r){ d = +r[1]; m = MESES_PT.indexOf(r[2]); a = +r[3]; }
+  else if ((r = t.match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/))){ d = +r[1]; m = +r[2] - 1; a = +r[3]; }
+  if (!r || m < 0 || m > 11 || d < 1 || d > 31) return null;
+  const h = sem(C.hora).match(/(\d{1,2})\s*(?:h|:)\s*(\d{2})?/);
+  return { dia: new Date(a, m, d), quando: new Date(a, m, d, h ? +h[1] : 0, h && h[2] ? +h[2] : 0) };
+}
+function atualizaContador(){
+  const box = $("count"), ev = dataEvento();
+  if (!ev){ box.classList.add("hide"); return; }
+  const agora = new Date(), hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+  let ms = ev.quando - agora;
+  if (hoje.getTime() > ev.dia.getTime()){ box.classList.add("hide"); return; }
+  box.classList.remove("hide");
+  if (hoje.getTime() === ev.dia.getTime() && ms <= 0){ box.innerHTML = '<div class="hoje">É hoje!</div>'; return; }
+  ms = Math.max(0, ms);
+  const dias = Math.floor(ms / 864e5), hrs = Math.floor(ms % 864e5 / 36e5), min = Math.floor(ms % 36e5 / 6e4), seg = Math.floor(ms % 6e4 / 1e3);
+  box.innerHTML = [[dias,"Dias"],[hrs,"Horas"],[min,"Min"],[seg,"Seg"]].map(([n,t]) => "<div><b>" + String(n).padStart(2,"0") + "</b><span>" + t + "</span></div>").join("");
+}
+atualizaContador(); setInterval(atualizaContador, 1000);
 const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["prazo","cfgPrazo"],["whatsapp","cfgZap"]];
 function aplicarCfg(c){
   CFG.forEach(([k,id]) => { if (typeof c[k] === "string") C[k] = c[k]; });
