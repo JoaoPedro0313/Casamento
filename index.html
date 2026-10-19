@@ -56,7 +56,7 @@ h1 em{font-style:normal;color:var(--gold);font-size:.8em;line-height:1}
 .fl1{top:0;right:0;width:260px;height:260px}.fl2{bottom:0;left:0;width:240px;height:240px}
 .fs1{right:7%;top:34%;width:62px;transform:scaleX(-1)}.fs2{left:7%;bottom:22%;width:62px}
 @media (min-width:900px){
-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);align-items:center;max-width:1360px;margin:40px auto;min-height:calc(100vh - 80px);padding:0;overflow:hidden;background:var(--card);border-radius:28px;box-shadow:0 14px 44px rgba(36,52,82,.12)}
+main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);align-items:center;max-width:none;margin:0;--z:1;zoom:var(--z);min-height:calc(100vh / var(--z));padding:0;overflow:hidden;background:var(--card)}
 .wave{display:block;position:absolute;left:0;bottom:0;width:100%;height:clamp(180px,26vh,260px);z-index:0;pointer-events:none}
 .tabs{grid-column:1/-1;grid-row:1;padding-top:20px}
 .hero{grid-column:1;grid-row:2;background:transparent;box-shadow:none;border-radius:0;overflow:visible;margin:0;padding:56px 44px 44px}
@@ -72,6 +72,9 @@ h1{font-size:clamp(54px,6vw,84px)}
 .txt{order:1}.foto{order:2;width:100%;max-width:500px}
 .count div{min-width:72px}.count b{font-size:40px}
 }
+@media (min-width:1500px){main{--z:1.25}}
+@media (min-width:1900px){main{--z:1.5}}
+@media (min-width:2300px){main{--z:1.8}}
 .meta{color:var(--mut);font-size:clamp(17px,4.6vw,21px);line-height:1.9}
 h2{font:500 26px "Cormorant Garamond",Georgia,serif;margin:0 0 6px}
 .sub{color:var(--mut);font-size:14px;margin:0 0 28px}
