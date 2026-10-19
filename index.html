@@ -443,7 +443,7 @@ function renderAdmin(){
     if (db) db.collection("config").onSnapshot(s => { const x = s.docs[0]; if (x) aplicarCfg(x.data()); }, () => {});
     if (db) db.collection("convidados").onSnapshot(s => { convidados = s.docs.map(x => x.data()); renderGrupos(); $("findBox").classList.toggle("hide", !convidados.length); buscar(); if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render(); $("uplMsg").textContent = convidados.length ? convidados.length + " grupo(s) na lista." : ""; }, () => {});
     if (db) db.collection("vinculos").onSnapshot(s => { vinculos = s.docs.map(x => x.data()); renderRelac(); renderGrupos(); }, () => {});
-    if (db && user && user.isOwner()) {
+    if (db && user && await user.isOwner()) {
       ehDono = true; renderGrupos();
       $('addGrp').onclick = async () => {
         const nome = $('novoGrp').value.trim(), nomes = $('novoGrpNomes').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
