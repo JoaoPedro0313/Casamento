@@ -24,7 +24,7 @@ main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:c
 }
 .hero{text-align:center;padding:40px 0 56px}
 .eyebrow{font-size:15px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
-.hero::after{content:"";display:block;width:72px;height:1px;background:var(--gold);margin:44px auto 0}
+.hero-txt::after{content:"";display:block;width:72px;height:1px;background:var(--gold);margin:44px auto 0}
 h1{font:400 clamp(60px,17vw,112px)/1.02 "Cormorant Garamond",Georgia,serif;margin:22px 0 28px}
 .mapa{display:inline-block;margin-top:22px;padding:10px 22px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font:500 13px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;background:rgba(255,255,255,.55)}
 .mapa:hover,.mapa:focus{background:var(--gold);color:#fff;outline:0}
@@ -101,9 +101,40 @@ textarea{resize:vertical;min-height:64px}
 .foot{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(14px,env(safe-area-inset-right,0px));z-index:5;margin:0;text-align:right}
 .foot .link{background:rgba(255,255,255,.7);border-radius:999px;padding:6px 12px;text-decoration:none;font-size:12px;letter-spacing:.04em}
 #bg{position:fixed;inset:0;z-index:0;pointer-events:none;--veu:.75}
-#bg div,.capa div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
-#bg div.on,.capa div.on{opacity:1}
+#bg div,.capa div,#heroFotos div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
+#bg div.on,.capa div.on,#heroFotos div.on{opacity:1}
 .capa{position:relative;width:100%;max-width:540px;aspect-ratio:4/3;margin:0 auto 38px;border-radius:22px;overflow:hidden;box-shadow:0 18px 48px rgba(36,52,82,.2)}
+#heroFotos{position:absolute;inset:0;z-index:0}
+#heroFotos::after{content:"";position:absolute;inset:0;background:rgba(20,30,52,.5)}
+#tira{display:flex;justify-content:center;gap:10px;margin:36px auto 0;max-width:560px}
+#tira div{flex:1 1 0;max-width:170px;aspect-ratio:3/4;border-radius:12px;background-size:cover;background-position:center}
+body[data-modelo=arco] .capa{max-width:300px;aspect-ratio:3/4;border-radius:999px 999px 20px 20px}
+body[data-modelo=cheia] .hero{position:relative;overflow:hidden;border-radius:22px;padding:80px 24px;min-height:min(72vh,580px);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:32px}
+body[data-modelo=cheia] .hero-txt{position:relative;z-index:1}
+body[data-modelo=cheia] .hero-txt::after{display:none}
+body[data-modelo=cheia] h1,body[data-modelo=cheia] .count b{color:#fff}
+body[data-modelo=cheia] .meta,body[data-modelo=cheia] .count span{color:rgba(255,255,255,.92)}
+body[data-modelo=cheia] .eyebrow,body[data-modelo=cheia] .count .hoje{color:#f1d9a0}
+body[data-modelo=cheia] .mapa{color:#fff;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.14)}
+body[data-modelo=metade] .hero{margin-bottom:32px}
+@media (min-width:900px){
+body[data-modelo=cheia] .hero,body[data-modelo=metade] .hero{grid-column:1/-1;position:relative;top:auto}
+body[data-modelo=cheia] #formSec,body[data-modelo=cheia] #doneSec,body[data-modelo=cheia] #loginSec,body[data-modelo=metade] #formSec,body[data-modelo=metade] #doneSec,body[data-modelo=metade] #loginSec{grid-column:1/-1;grid-row:3;justify-self:center;width:100%}
+body[data-modelo=metade] .hero{display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(32px,6vw,96px);align-items:center;padding:0}
+body[data-modelo=metade] .capa{max-width:none;margin:0;aspect-ratio:auto;align-self:stretch;min-height:480px}
+}
+.modelos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mod{display:block;text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px;cursor:pointer;font:400 13px Inter,sans-serif;color:var(--fg)}
+.mod.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.mod span{display:block;margin-top:8px}
+.mm{position:relative;height:96px;border-radius:8px;background:#fff;border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.mm.row{flex-direction:row;gap:0}
+.mm .mp{background-color:#b9c8e4;background-image:var(--f0,none);background-size:cover;background-position:center;flex:none}
+.mm .full{position:absolute;inset:0}
+.mm .sc{position:absolute;inset:0}
+.mm i{display:block;height:4px;border-radius:2px;background:#8a9bbd;position:relative}
+.mm i.mn{height:8px;background:#44526f}
+.mm i.w{background:#fff}
 #bg::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,var(--veu))}
 #fotosLista{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
 .thumb{position:relative;width:96px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
@@ -128,11 +159,15 @@ textarea{resize:vertical;min-height:64px}
   <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="fotos" type="button">Fotos</button><button data-t="sair" type="button">Sair</button></nav>
   <section class="hero" id="heroSec">
     <div class="capa hide" id="capa" aria-hidden="true"></div>
-    <div class="eyebrow">Vamos nos casar</div>
-    <h1 id="noivos"></h1>
-    <div class="meta" id="meta"></div>
-    <a class="mapa hide" id="mapaLink" target="_blank" rel="noopener">Ver localização no mapa</a>
-    <div class="count hide" id="count" aria-live="off"></div>
+    <div class="hide" id="heroFotos" aria-hidden="true"></div>
+    <div class="hero-txt">
+      <div class="eyebrow">Vamos nos casar</div>
+      <h1 id="noivos"></h1>
+      <div class="meta" id="meta"></div>
+      <a class="mapa hide" id="mapaLink" target="_blank" rel="noopener">Ver localização no mapa</a>
+      <div class="count hide" id="count" aria-live="off"></div>
+      <div class="hide" id="tira" aria-hidden="true"></div>
+    </div>
   </section>
 
   <section id="formSec">
@@ -241,8 +276,8 @@ textarea{resize:vertical;min-height:64px}
     <h2>Fotos da tela inicial</h2>
     <p class="hint">Escolha as fotos e como elas aparecem na tela inicial do convite. Com mais de uma, elas alternam sozinhas. Nada vai ao ar até você tocar em Salvar fotos.</p>
     <div class="cfg-grp">
-      <h3>Como mostrar na tela inicial</h3>
-      <div class="field"><div class="seg" id="modoSeg"></div></div>
+      <h3>Modelo da tela inicial</h3>
+      <div class="field"><div class="modelos" id="modoSeg"></div></div>
     </div>
     <div class="cfg-grp">
       <h3>Fotos (até 5)</h3>
@@ -333,33 +368,49 @@ function aplicarCfg(c){
   CFG.forEach(([k,id]) => { const el = $(id); if (el && document.activeElement !== el) el.value = C[k] || ""; });
   if (Array.isArray(c.fotos)) FOTOS = c.fotos.filter(f => typeof f === "string" && f.startsWith("data:image/"));
   if (typeof c.veu === "number") VEU = c.veu;
-  if (c.fotosModo === "fundo" || c.fotosModo === "destaque") MODO = c.fotosModo;
+  if (MODELOS.some(m => m[0] === c.fotosModo)) MODO = c.fotosModo;
   $("veu").value = VEU; desenhaModo(); desenhaFundo(); desenhaFotosAdmin();
 }
 
 // ---- Fotos de fundo ----
 const MAX_FOTOS = 5;
 let FOTOS = [], VEU = 75, MODO = "destaque", bgTimer = null;
+const MODELOS = [
+  ["destaque","Moldura",'<div class="mp" style="width:70%;height:42px;border-radius:6px"></div><i class="mn" style="width:48%"></i><i style="width:32%"></i>'],
+  ["cheia","Tela cheia",'<div class="mp full"></div><div class="sc" style="background:rgba(20,30,52,.45)"></div><i class="mn w" style="width:56%"></i><i class="w" style="width:36%"></i>'],
+  ["metade","Metade e metade",'__ROW__'],
+  ["arco","Arco",'<div class="mp" style="width:34px;height:50px;border-radius:17px 17px 3px 3px"></div><i class="mn" style="width:48%"></i><i style="width:32%"></i>'],
+  ["tira","Tira de fotos",'<i class="mn" style="width:48%"></i><i style="width:32%"></i><div style="display:flex;gap:4px;margin-top:3px"><div class="mp" style="width:24px;height:32px;border-radius:4px"></div><div class="mp" style="width:24px;height:32px;border-radius:4px"></div><div class="mp" style="width:24px;height:32px;border-radius:4px"></div></div>'],
+  ["fundo","Fundo suave",'<div class="mp full"></div><div class="sc" style="background:rgba(255,255,255,.62)"></div><i class="mn" style="width:48%"></i><i style="width:32%"></i>']
+];
 function desenhaFundo(){
   clearInterval(bgTimer);
-  const bg = $("bg"), capa = $("capa"), alvo = MODO === "fundo" ? bg : capa;
-  bg.innerHTML = ""; capa.innerHTML = ""; bg.classList.add("hide"); capa.classList.add("hide");
+  document.body.dataset.modelo = FOTOS.length ? MODO : "";
+  const alvos = { fundo: $("bg"), cheia: $("heroFotos"), tira: $("tira") }, alvo = alvos[MODO] || $("capa");
+  [$("bg"), $("heroFotos"), $("tira"), $("capa")].forEach(e => { e.innerHTML = ""; e.classList.add("hide"); });
   if (!FOTOS.length) return;
   alvo.classList.remove("hide");
-  bg.style.setProperty("--veu", VEU / 100);
-  FOTOS.forEach((src, i) => { const d = document.createElement("div"); d.style.backgroundImage = 'url("' + src + '")'; if (!i) d.className = "on"; alvo.appendChild(d); });
-  if (FOTOS.length > 1){ let k = 0; const ds = alvo.children; bgTimer = setInterval(() => { ds[k].classList.remove("on"); k = (k + 1) % ds.length; ds[k].classList.add("on"); }, 6000); }
+  $("bg").style.setProperty("--veu", VEU / 100);
+  const anima = MODO !== "tira";
+  FOTOS.forEach((src, i) => { const d = document.createElement("div"); d.style.backgroundImage = 'url("' + src + '")'; if (anima && !i) d.className = "on"; alvo.appendChild(d); });
+  if (anima && FOTOS.length > 1){ let k = 0; const ds = alvo.children; bgTimer = setInterval(() => { ds[k].classList.remove("on"); k = (k + 1) % ds.length; ds[k].classList.add("on"); }, 6000); }
 }
 function desenhaModo(){
-  const seg = $("modoSeg"); seg.innerHTML = "";
-  [["destaque","Foto em destaque"],["fundo","Fundo da tela"]].forEach(([k, t]) => {
-    const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (MODO === k) b.className = "on";
+  const box = $("modoSeg"); box.innerHTML = "";
+  box.style.setProperty("--f0", FOTOS[0] ? 'url("' + FOTOS[0] + '")' : "none");
+  MODELOS.forEach(([k, t, h]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "mod" + (MODO === k ? " on" : "");
+    const m = document.createElement("div"); m.className = "mm";
+    if (h === "__ROW__"){ m.classList.add("row"); m.innerHTML = '<div class="mp" style="width:50%;height:100%"></div><div style="width:50%;display:flex;flex-direction:column;align-items:center;gap:5px"><i class="mn" style="width:70%"></i><i style="width:50%"></i></div>'; }
+    else m.innerHTML = h;
+    const sp = document.createElement("span"); sp.textContent = t; b.append(m, sp);
     b.onclick = () => { MODO = k; desenhaModo(); desenhaFundo(); $("fotosMsg").textContent = "Toque em Salvar fotos para publicar."; };
-    seg.appendChild(b);
+    box.appendChild(b);
   });
   $("veuField").classList.toggle("hide", MODO !== "fundo");
 }
 function desenhaFotosAdmin(){
+  desenhaModo();
   const box = $("fotosLista"); box.innerHTML = "";
   FOTOS.forEach((src, i) => {
     const w = document.createElement("div"); w.className = "thumb";
