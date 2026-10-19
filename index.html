@@ -2,14 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Confirmação de presença</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
-:root{--bg:#ffffff;--soft:#eaf0fa;--fg:#27364f;--mut:#74839c;--line:#dde5f1;--gold:#b8934a;--btn:#5d78a8;--btnfg:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111826;--soft:#1b2640;--fg:#eef1f8;--mut:#9aa8c2;--line:#2a3552;--gold:#d6b46c;--btn:#92a8d1;--btnfg:#111826;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#111826;--soft:#1b2640;--fg:#eef1f8;--mut:#9aa8c2;--line:#2a3552;--gold:#d6b46c;--btn:#92a8d1;--btnfg:#111826;color-scheme:dark}
+:root{--bg:#ffffff;--soft:#e9eff8;--fg:#243452;--mut:#667898;--line:#d3ddee;--gold:#a8842f;--btn:#92a8d1;--btnfg:#1b2a47;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg) linear-gradient(var(--soft),var(--bg) 480px) no-repeat;color:var(--fg);font:300 16px/1.6 Inter,system-ui,sans-serif}
@@ -131,9 +130,8 @@ textarea{resize:vertical;min-height:64px}
 
   <section id="loginSec" class="hide">
     <h2>Acesso dos noivos</h2>
-    <p class="sub">Entre com o e-mail e a senha cadastrados.</p>
-    <div class="field"><label for="lgEmail">E-mail</label><input id="lgEmail" type="email" autocomplete="username"></div>
-    <div class="field"><label for="lgSenha">Senha</label><input id="lgSenha" type="password" autocomplete="current-password"></div>
+    <p class="sub">Digite o código de acesso.</p>
+    <div class="field"><label for="lgSenha">Código</label><input id="lgSenha" type="password" inputmode="numeric" autocomplete="off"></div>
     <button class="btn" id="entrar" type="button">Entrar</button>
     <div class="err" id="lgErr"></div>
     <button class="link" id="voltar" type="button">Voltar ao convite</button>
@@ -194,6 +192,7 @@ textarea{resize:vertical;min-height:64px}
 
 // ---- Supabase (Project Settings > API) ----
 const SUPABASE_URL = "https://dcckwtxpbueiulanlgay.supabase.co";
+const ADMIN_EMAIL = "noivos@convite.app"; // usuário interno criado pelo supabase-admin.sql (não precisa ser e-mail real)
 const SUPABASE_KEY = "sb_publishable_qau8NOrCpK88FdOu095suQ_8LH_OP04";
 const sb = (window.supabase && SUPABASE_URL.startsWith("http")) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 if (!sb) console.warn("Supabase não configurado: preencha SUPABASE_URL e SUPABASE_KEY.");
@@ -486,18 +485,18 @@ async function souAdmin(){ const { data } = await sb.rpc("is_admin"); return dat
 // ---- Login dos noivos ----
 $("abrirLogin").onclick = () => {
   if (!sb) return alert("Supabase ainda não foi configurado no arquivo.");
-  $("formSec").classList.add("hide"); $("doneSec").classList.add("hide"); $("loginSec").classList.remove("hide"); $("lgEmail").focus();
+  $("formSec").classList.add("hide"); $("doneSec").classList.add("hide"); $("loginSec").classList.remove("hide"); $("lgSenha").focus();
 };
 $("voltar").onclick = () => setTab("convite");
 $("lgSenha").onkeydown = e => { if (e.key === "Enter") $("entrar").click(); };
 $("entrar").onclick = async () => {
-  const email = $("lgEmail").value.trim(), password = $("lgSenha").value;
+  const email = ADMIN_EMAIL, password = $("lgSenha").value.trim();
   $("lgErr").textContent = "";
-  if (!email || !password) return $("lgErr").textContent = "Informe e-mail e senha.";
+  if (!password) return $("lgErr").textContent = "Digite o código.";
   $("entrar").disabled = true;
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) $("lgErr").textContent = "E-mail ou senha incorretos.";
-  else if (!(await souAdmin())) { await sb.auth.signOut(); $("lgErr").textContent = "Este e-mail não tem acesso ao painel."; }
+  if (error) $("lgErr").textContent = "Código incorreto.";
+  else if (!(await souAdmin())) { await sb.auth.signOut(); $("lgErr").textContent = "Este código não dá acesso ao painel."; }
   else { await ativaAdmin(); setTab("admin"); }
   $("entrar").disabled = false;
 };
