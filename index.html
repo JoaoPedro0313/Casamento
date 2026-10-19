@@ -13,7 +13,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg) linear-gradient(var(--soft),var(--bg) 480px) no-repeat;color:var(--fg);font:300 16px/1.6 Inter,system-ui,sans-serif}
 html,body{min-height:100%}
-main{width:100%;max-width:none;margin:0;padding-block:56px 72px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+main{position:relative;z-index:1;width:100%;max-width:none;margin:0;padding-block:56px 72px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 @media (min-width:900px){
 main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(48px,8vw,140px);align-items:start;min-height:100vh;padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:max(48px,env(safe-area-inset-right,0px))}
 .tabs{grid-column:1/-1}
@@ -34,8 +34,8 @@ input,textarea{width:100%;font:inherit;color:var(--fg);background:transparent;bo
 input:focus,textarea:focus{border-bottom-color:var(--gold)}
 textarea{resize:vertical;min-height:64px}
 .field{margin-bottom:28px}
-.row{display:flex;align-items:flex-end;gap:14px;margin-bottom:18px}
-.row .nm{flex:1}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:22px}
+.row .nm{flex:1 1 100%;width:100%}
 .seg{display:flex;gap:2px;flex:none}
 .seg button{font:400 13px Inter,sans-serif;background:transparent;color:var(--mut);border:0;padding:8px 12px;cursor:pointer;border-radius:999px}
 .seg button.on{background:var(--btn);color:var(--btnfg)}
@@ -92,11 +92,21 @@ textarea{resize:vertical;min-height:64px}
 .grp-btn{flex:none;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:8px 16px;font:500 12px Inter,sans-serif;cursor:pointer}
 
 .foot{text-align:center;margin-top:48px}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;--veu:.75}
+#bg div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
+#bg div.on{opacity:1}
+#bg::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,var(--veu))}
+#fotosLista{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.thumb{position:relative;width:96px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:3px;right:3px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(255,255,255,.9);color:var(--fg);font-size:15px;line-height:1;cursor:pointer;padding:0}
+#veu{padding:0;border:0}
 .foot .link{font-size:12px;opacity:.7}
 #loginSec .field{margin-bottom:22px}
 </style>
 </head>
 <body>
+<div id="bg" class="hide" aria-hidden="true"></div>
 <main>
   <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="sair" type="button">Sair</button></nav>
   <section class="hero" id="heroSec">
@@ -114,12 +124,14 @@ textarea{resize:vertical;min-height:64px}
       <div class="res" id="res"></div>
     </div>
     <input id="fam" type="hidden">
+    <div id="restoForm">
     <div id="pessoas"></div>
     <div class="relac" id="relac"></div>
     <button class="link" id="add" type="button">+ adicionar pessoa</button>
     <div class="field" style="margin-top:28px"><label for="msg">Recado para os noivos (opcional)</label><textarea id="msg"></textarea></div>
     <button class="btn" id="enviar" type="button">Enviar confirmação</button>
     <div class="err" id="err"></div>
+    </div>
   </section>
 
   <section id="doneSec" class="done hide">
@@ -154,6 +166,13 @@ textarea{resize:vertical;min-height:64px}
       <div class="field"><label for="cfgCidade">Cidade</label><input id="cfgCidade" placeholder="Ex.: Jacobina, BA" autocomplete="off"></div>
       <div class="field"><label for="cfgPrazo">Prazo para confirmar (opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
       <div class="field"><label for="cfgZap">WhatsApp dos noivos (opcional, só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
+      <div class="field">
+        <label>Fotos de fundo (até 5)</label>
+        <div id="fotosLista"></div>
+        <label class="link" id="fotoAdd" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer">+ Adicionar fotos<input type="file" id="fotoArq" accept="image/*" multiple class="hide"></label>
+        <p class="hint" style="margin:10px 0 0">Com mais de uma foto, elas alternam sozinhas. As imagens são reduzidas automaticamente.</p>
+      </div>
+      <div class="field"><label for="veu">Véu claro sobre a foto (para o texto ficar legível)</label><input id="veu" type="range" min="30" max="95" value="75"></div>
       <div class="acts"><button class="btn" id="salvarCfg" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar dados</button></div>
       <div class="ok" id="cfgMsg"></div>
     </div>
@@ -209,7 +228,8 @@ const C = {
 // --------------------
 const $ = id => document.getElementById(id);
 let pessoas = [{nome:"", vai:true}];
-let enviado = null, convidados = [], vinculos = [];
+let enviado = null, convidados = [], vinculos = [], liberado = false;
+function atualizaForm(){ $("restoForm").classList.toggle("hide", convidados.length > 0 && !liberado); }
 function setTab(t){ const adm = t === "admin";
   $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
   $("heroSec").classList.toggle("hide", adm); $("adminSec").classList.toggle("hide", !adm);
@@ -227,7 +247,53 @@ function aplicarCfg(c){
   CFG.forEach(([k,id]) => { if (typeof c[k] === "string") C[k] = c[k]; });
   desenhaHero();
   CFG.forEach(([k,id]) => { const el = $(id); if (el && document.activeElement !== el) el.value = C[k] || ""; });
+  if (Array.isArray(c.fotos)) FOTOS = c.fotos.filter(f => typeof f === "string" && f.startsWith("data:image/"));
+  if (typeof c.veu === "number") VEU = c.veu;
+  $("veu").value = VEU; desenhaFundo(); desenhaFotosAdmin();
 }
+
+// ---- Fotos de fundo ----
+const MAX_FOTOS = 5;
+let FOTOS = [], VEU = 75, bgTimer = null;
+function desenhaFundo(){
+  const bg = $("bg"); clearInterval(bgTimer); bg.innerHTML = "";
+  bg.classList.toggle("hide", !FOTOS.length);
+  if (!FOTOS.length) return;
+  bg.style.setProperty("--veu", VEU / 100);
+  FOTOS.forEach((src, i) => { const d = document.createElement("div"); d.style.backgroundImage = 'url("' + src + '")'; if (!i) d.className = "on"; bg.appendChild(d); });
+  if (FOTOS.length > 1){ let k = 0; const ds = bg.children; bgTimer = setInterval(() => { ds[k].classList.remove("on"); k = (k + 1) % ds.length; ds[k].classList.add("on"); }, 6000); }
+}
+function desenhaFotosAdmin(){
+  const box = $("fotosLista"); box.innerHTML = "";
+  FOTOS.forEach((src, i) => {
+    const w = document.createElement("div"); w.className = "thumb";
+    const im = document.createElement("img"); im.src = src; im.alt = "";
+    const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remover foto");
+    x.onclick = () => { FOTOS.splice(i, 1); desenhaFundo(); desenhaFotosAdmin(); $("cfgMsg").textContent = "Toque em Salvar dados para publicar a mudança."; };
+    w.append(im, x); box.appendChild(w);
+  });
+  $("fotoAdd").classList.toggle("hide", FOTOS.length >= MAX_FOTOS);
+}
+function reduzFoto(file){
+  return new Promise((ok, fail) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const s = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", 0.72));
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); fail(); };
+    im.src = url;
+  });
+}
+$("fotoArq").onchange = async e => {
+  const arqs = [...e.target.files]; e.target.value = ""; let falhou = false;
+  for (const f of arqs){ if (FOTOS.length >= MAX_FOTOS) break; try { FOTOS.push(await reduzFoto(f)); } catch(_) { falhou = true; } }
+  desenhaFundo(); desenhaFotosAdmin();
+  $("cfgMsg").textContent = falhou ? "Alguma foto não pôde ser lida (use JPG ou PNG). As demais foram adicionadas — toque em Salvar dados." : "Toque em Salvar dados para publicar as fotos.";
+};
+$("veu").oninput = e => { VEU = +e.target.value; $("bg").style.setProperty("--veu", VEU / 100); };
 CFG.forEach(([k,id]) => { const el = $(id); if (el) el.value = C[k] || ""; });
 
 function slug(s){ return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "familia"; }
@@ -256,7 +322,7 @@ function render(){
   });
   renderRelac();
 }
-render();
+render(); atualizaForm();
 $("add").onclick = () => { pessoas.push({nome:"", vai:true}); render(); const ins = $("pessoas").querySelectorAll("input"); ins[ins.length-1].focus(); };
 
 function mostrarObrigado(d){
@@ -425,13 +491,13 @@ function buscar(){
   const toks = q.split(/\s+/).filter(t => t.length >= 2);
   const pontos = g => { const ws = norm(g.familia + " " + g.pessoas.join(" ")).split(/[^a-z0-9]+/).filter(Boolean); return toks.reduce((n, t) => n + (ws.some(w => w.startsWith(t) || (w.length >= 3 && t.startsWith(w))) ? 1 : 0), 0); };
   const achou = convidados.map(g => ({g, p: pontos(g)})).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, 8).map(x => x.g);
-  if (!achou.length) { const d = document.createElement("div"); d.className = "none"; d.textContent = "Não encontramos. Você pode preencher manualmente abaixo."; box.appendChild(d); return; }
+  if (!achou.length) { const d = document.createElement("div"); d.className = "none"; d.textContent = "Não encontramos seu nome. "; const m = document.createElement("button"); m.type = "button"; m.className = "link"; m.textContent = "Preencher manualmente"; m.onclick = () => { liberado = true; atualizaForm(); box.innerHTML = ""; const ins = $("pessoas").querySelectorAll("input"); if (ins[0]) ins[0].focus(); }; d.appendChild(m); box.appendChild(d); return; }
   achou.forEach(g => {
     const b = document.createElement("button"); b.type = "button";
     const solo = g.pessoas.length === 1 && norm(g.pessoas[0]) === norm(g.familia);
     b.textContent = solo ? curto(g.familia) : g.familia;
     if (!solo) { const s = document.createElement("small"); s.textContent = g.pessoas.map(curto).join(", "); b.appendChild(s); }
-    b.onclick = () => { $("fam").value = g.familia; pessoas = g.pessoas.map(n => ({nome:n, vai:true})); render(); $("busca2").value = ""; box.innerHTML = ""; $("fam").scrollIntoView({behavior:"smooth", block:"center"}); };
+    b.onclick = () => { $("fam").value = g.familia; pessoas = g.pessoas.map(n => ({nome:n, vai:true})); liberado = true; atualizaForm(); render(); $("busca2").value = ""; box.innerHTML = ""; $("fam").scrollIntoView({behavior:"smooth", block:"center"}); };
     box.appendChild(b);
   });
 }
@@ -472,7 +538,7 @@ async function carregaListas(){
   if (!g.error) convidados = g.data;
   if (!v.error) vinculos = v.data;
   renderGrupos(); renderRelac();
-  $("findBox").classList.toggle("hide", !convidados.length); buscar();
+  $("findBox").classList.toggle("hide", !convidados.length); atualizaForm(); buscar();
   if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render();
   $("uplMsg").textContent = ehDono && convidados.length ? convidados.length + " grupo(s) na lista." : "";
 }
@@ -539,6 +605,7 @@ async function ativaAdmin(){
   $("salvarCfg").onclick = async () => {
     const cfg = {}; CFG.forEach(([k,id]) => cfg[k] = $(id).value.trim());
     if (cfg.whatsapp) cfg.whatsapp = cfg.whatsapp.replace(/\D/g, "");
+    cfg.fotos = FOTOS; cfg.veu = VEU;
     $("salvarCfg").disabled = true; $("cfgMsg").textContent = "Salvando…";
     const { error } = await sb.from("config").upsert({ id: "convite", dados: cfg });
     if (error) $("cfgMsg").textContent = "Não foi possível salvar. Tente de novo.";
