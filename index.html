@@ -1,7 +1,11 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Confirmação de presença</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
 :root{--bg:#ffffff;--soft:#eaf0fa;--fg:#27364f;--mut:#74839c;--line:#dde5f1;--gold:#b8934a;--btn:#5d78a8;--btnfg:#ffffff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111826;--soft:#1b2640;--fg:#eef1f8;--mut:#9aa8c2;--line:#2a3552;--gold:#d6b46c;--btn:#92a8d1;--btnfg:#111826;color-scheme:dark}}
@@ -15,7 +19,8 @@ main{width:100%;max-width:none;margin:0;padding-block:56px 72px;padding-left:max
 main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:clamp(48px,8vw,140px);align-items:start;min-height:100vh;padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:max(48px,env(safe-area-inset-right,0px))}
 .tabs{grid-column:1/-1}
 .hero{grid-column:1;grid-row:2;position:sticky;top:56px;align-self:start}
-#formSec,#doneSec{grid-column:2;grid-row:2;max-width:620px}
+#formSec,#doneSec,#loginSec{grid-column:2;grid-row:2;max-width:620px}
+.foot{grid-column:1/-1;grid-row:3}
 #adminSec{grid-column:1/-1;grid-row:2}
 }
 .hero{text-align:center;padding:40px 0 56px}
@@ -86,9 +91,15 @@ textarea{resize:vertical;min-height:64px}
 .grp-add{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
 .grp-add input{flex:1;min-width:0;font-size:14px}
 .grp-btn{flex:none;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:8px 16px;font:500 12px Inter,sans-serif;cursor:pointer}
+
+.foot{text-align:center;margin-top:48px}
+.foot .link{font-size:12px;opacity:.7}
+#loginSec .field{margin-bottom:22px}
 </style>
+</head>
+<body>
 <main>
-  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button></nav>
+  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="sair" type="button">Sair</button></nav>
   <section class="hero" id="heroSec">
     <div class="eyebrow">Vamos nos casar</div>
     <h1 id="noivos"></h1>
@@ -116,6 +127,16 @@ textarea{resize:vertical;min-height:64px}
     <h2>Obrigado!</h2>
     <p class="sub" id="doneTxt"></p>
     <button class="link" id="editar" type="button">Alterar minha resposta</button>
+  </section>
+
+  <section id="loginSec" class="hide">
+    <h2>Acesso dos noivos</h2>
+    <p class="sub">Entre com o e-mail e a senha cadastrados.</p>
+    <div class="field"><label for="lgEmail">E-mail</label><input id="lgEmail" type="email" autocomplete="username"></div>
+    <div class="field"><label for="lgSenha">Senha</label><input id="lgSenha" type="password" autocomplete="current-password"></div>
+    <button class="btn" id="entrar" type="button">Entrar</button>
+    <div class="err" id="lgErr"></div>
+    <button class="link" id="voltar" type="button">Voltar ao convite</button>
   </section>
 
   <section id="adminSec" class="admin hide">
@@ -166,10 +187,17 @@ textarea{resize:vertical;min-height:64px}
       <div class="ok" id="uplMsg"></div>
     </div>
   </section>
+  <footer class="foot" id="foot"><button class="link" id="abrirLogin" type="button">Acesso dos noivos</button></footer>
 </main>
 
 <script>
-// ---- Edite aqui ----
+
+// ---- Supabase (Project Settings > API) ----
+const SUPABASE_URL = "COLE_AQUI_A_PROJECT_URL";
+const SUPABASE_KEY = "COLE_AQUI_A_ANON_PUBLIC_KEY";
+const sb = (window.supabase && SUPABASE_URL.startsWith("http")) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+if (!sb) console.warn("Supabase não configurado: preencha SUPABASE_URL e SUPABASE_KEY.");
+// ---- Edite aqui (valores padrão; os noivos editam pelo painel) ----
 const C = {
   noivos: "Nome & Nome",
   data: "00 de mês de 2026",
@@ -182,11 +210,11 @@ const C = {
 // --------------------
 const $ = id => document.getElementById(id);
 let pessoas = [{nome:"", vai:true}];
-let db = null, enviado = null, convidados = [], vinculos = [];
+let enviado = null, convidados = [], vinculos = [];
 function setTab(t){ const adm = t === "admin";
   $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
   $("heroSec").classList.toggle("hide", adm); $("adminSec").classList.toggle("hide", !adm);
-  $("formSec").classList.toggle("hide", adm || !!enviado); $("doneSec").classList.toggle("hide", adm || !enviado); }
+  $("formSec").classList.toggle("hide", adm || !!enviado); $("doneSec").classList.toggle("hide", adm || !enviado); $("loginSec").classList.add("hide"); }
 
 function desenhaHero(){
   $("noivos").textContent = C.noivos;
@@ -254,8 +282,10 @@ $("enviar").onclick = async () => {
   const d = {familia, pessoas:lista, mensagem:$("msg").value.trim(), criado:Date.now()};
   $("enviar").disabled = true;
   try {
-    if (db) { await db.collection("rsvps").doc(slug(familia)).set(d); }
-    else { whatsapp(d); }
+    if (sb) {
+      const { error } = await sb.rpc("enviar_rsvp", { p_id: slug(familia), p_familia: familia, p_pessoas: lista, p_mensagem: d.mensagem });
+      if (error) throw error;
+    } else { whatsapp(d); }
     enviado = d; mostrarObrigado(d);
   } catch(e) {
     $("err").textContent = "Não foi possível salvar agora. Tente novamente em instantes.";
@@ -289,11 +319,10 @@ let ehDono = false;
 const msgGrp = t => { const e = $('grpMsg'); if (e) e.textContent = t; };
 const idVinc = n => slug(n.join(' ')).slice(0,120);
 async function salvaGrupo(g, pessoas){
-  try {
-    const col = db.collection('convidados'), id = slug(g.familia);
-    if (pessoas.length) await col.doc(id).set({familia:g.familia, pessoas}); else await col.doc(id).delete();
-    return true;
-  } catch(e) { msgGrp('Não foi possível salvar. Tente de novo.'); return false; }
+  const id = slug(g.familia);
+  const r = pessoas.length ? await sb.from('convidados').upsert({id, familia:g.familia, pessoas}) : await sb.from('convidados').delete().eq('id', id);
+  if (r.error) { msgGrp('Não foi possível salvar. Tente de novo.'); return false; }
+  await carregaListas(); return true;
 }
 async function renomeiaGrupo(g, novo){
   novo = novo.trim();
@@ -301,13 +330,11 @@ async function renomeiaGrupo(g, novo){
   if (novo === g.familia) return null;
   const idN = slug(novo), idA = slug(g.familia);
   if (idN !== idA && convidados.some(x => slug(x.familia) === idN)) return 'Já existe um grupo com esse nome.';
-  try {
-    const col = db.collection('convidados');
-    await col.doc(idN).set({familia:novo, pessoas:g.pessoas});
-    if (idN !== idA) await col.doc(idA).delete();
-    msgGrp('Nome do grupo atualizado.');
-    return null;
-  } catch(e) { return 'Não foi possível salvar. Tente de novo.'; }
+  const r = await sb.from('convidados').upsert({id:idN, familia:novo, pessoas:g.pessoas});
+  if (r.error) return 'Não foi possível salvar. Tente de novo.';
+  if (idN !== idA) { const d = await sb.from('convidados').delete().eq('id', idA); if (d.error) return 'Não foi possível salvar. Tente de novo.'; }
+  msgGrp('Nome do grupo atualizado.');
+  await carregaListas(); return null;
 }
 function renderGrupos(){
   if (!ehDono) return;
@@ -352,7 +379,7 @@ function renderGrupos(){
     const d = document.createElement('div'); d.className = 'fam';
     const h = document.createElement('h3'); h.textContent = v.nomes.join(' · '); d.appendChild(h);
     let arm = false; const x = document.createElement('button'); x.className = 'link'; x.type = 'button'; x.textContent = 'Remover vínculo'; x.style.marginTop = '6px';
-    x.onclick = async () => { if (!arm){ arm = true; x.textContent = 'Toque de novo para remover'; return; } try { await db.collection('vinculos').doc(idVinc(v.nomes)).delete(); } catch(e) {} };
+    x.onclick = async () => { if (!arm){ arm = true; x.textContent = 'Toque de novo para remover'; return; } await sb.from('vinculos').delete().eq('id', idVinc(v.nomes)); await carregaListas(); };
     d.appendChild(x); V.appendChild(d);
   });
 }
@@ -427,7 +454,7 @@ function renderAdmin(){
     if (n.length){ const p = document.createElement("p"); p.textContent = "Não vão: " + n.join(", "); d.appendChild(p); }
     if (f.mensagem){ const p = document.createElement("p"); p.className = "msg"; p.textContent = "“" + f.mensagem + "”"; d.appendChild(p); }
     let arm = false; const x = document.createElement("button"); x.className = "link"; x.type = "button"; x.textContent = "Remover"; x.style.marginTop = "6px";
-    x.onclick = async () => { if (!arm){ arm = true; x.textContent = "Toque de novo para remover"; return; } try { await db.collection("rsvps").doc(slug(f.familia)).delete(); } catch(e) {} };
+    x.onclick = async () => { if (!arm){ arm = true; x.textContent = "Toque de novo para remover"; return; } await sb.from("rsvps").delete().eq("id", f.id); await carregaRsvps(); };
     d.appendChild(x);
     L.appendChild(d);
   });
@@ -435,73 +462,128 @@ function renderAdmin(){
   $("sVai").textContent = vai; $("sNao").textContent = nao; $("sFam").textContent = todas.length;
 }
 
+// ---- Carga de dados (Supabase) ----
+async function carregaCfg(){
+  const { data } = await sb.from("config").select("dados").eq("id","convite").maybeSingle();
+  if (data && data.dados) aplicarCfg(data.dados);
+}
+async function carregaListas(){
+  if (!sb) return;
+  const [g, v] = await Promise.all([sb.from("convidados").select("familia,pessoas"), sb.from("vinculos").select("nomes")]);
+  if (!g.error) convidados = g.data;
+  if (!v.error) vinculos = v.data;
+  renderGrupos(); renderRelac();
+  $("findBox").classList.toggle("hide", !convidados.length); buscar();
+  if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render();
+  $("uplMsg").textContent = ehDono && convidados.length ? convidados.length + " grupo(s) na lista." : "";
+}
+async function carregaRsvps(){
+  const { data, error } = await sb.from("rsvps").select("id,familia,pessoas,mensagem,criado");
+  if (!error) { todas = data; renderAdmin(); }
+}
+async function souAdmin(){ const { data } = await sb.rpc("is_admin"); return data === true; }
+
+// ---- Login dos noivos ----
+$("abrirLogin").onclick = () => {
+  if (!sb) return alert("Supabase ainda não foi configurado no arquivo.");
+  $("formSec").classList.add("hide"); $("doneSec").classList.add("hide"); $("loginSec").classList.remove("hide"); $("lgEmail").focus();
+};
+$("voltar").onclick = () => setTab("convite");
+$("lgSenha").onkeydown = e => { if (e.key === "Enter") $("entrar").click(); };
+$("entrar").onclick = async () => {
+  const email = $("lgEmail").value.trim(), password = $("lgSenha").value;
+  $("lgErr").textContent = "";
+  if (!email || !password) return $("lgErr").textContent = "Informe e-mail e senha.";
+  $("entrar").disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) $("lgErr").textContent = "E-mail ou senha incorretos.";
+  else if (!(await souAdmin())) { await sb.auth.signOut(); $("lgErr").textContent = "Este e-mail não tem acesso ao painel."; }
+  else { await ativaAdmin(); setTab("admin"); }
+  $("entrar").disabled = false;
+};
+
+// ---- Painel (liga uma vez, depois do login) ----
+let adminAtivo = false;
+async function ativaAdmin(){
+  if (adminAtivo) return; adminAtivo = true; ehDono = true;
+  $("foot").classList.add("hide");
+  renderGrupos();
+  $('addGrp').onclick = async () => {
+    const nome = $('novoGrp').value.trim(), nomes = $('novoGrpNomes').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
+    if (!nome) return msgGrp('Dê um nome ao grupo.');
+    if (!nomes.length) return msgGrp('Adicione pelo menos uma pessoa.');
+    const ex = convidados.find(x => slug(x.familia) === slug(nome));
+    const todos = [...(ex ? ex.pessoas : [])]; nomes.forEach(n => { if (!todos.some(y => norm(y) === norm(n))) todos.push(n); });
+    $('addGrp').disabled = true;
+    if (await salvaGrupo({familia: ex ? ex.familia : nome}, todos)) { $('novoGrp').value = ''; $('novoGrpNomes').value = ''; msgGrp('Grupo salvo.'); }
+    $('addGrp').disabled = false;
+  };
+  $('addVinc').onclick = async () => {
+    const nomes = $('novoVinc').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
+    if (nomes.length < 2) return msgGrp('Informe pelo menos duas pessoas.');
+    const r = await sb.from('vinculos').upsert({id: idVinc(nomes), nomes});
+    if (r.error) return msgGrp('Não foi possível salvar. Tente de novo.');
+    $('novoVinc').value = ''; msgGrp('Vínculo salvo.'); await carregaListas();
+  };
+  const msgU = t => $("uplMsg").textContent = t;
+  $("arq").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $("listaTxt").value = String(r.result).replace(/^\ufeff/, ""); msgU("Arquivo carregado. Confira e toque em Salvar lista."); }; r.readAsText(f); e.target.value = ""; };
+  $("subir").onclick = async () => {
+    const g = parseLista($("listaTxt").value), v = parseVinculos($("listaTxt").value);
+    if (!g.length && !v.length) return msgU("Nenhum nome encontrado.");
+    $("subir").disabled = true; msgU("Salvando…");
+    const r1 = g.length ? await sb.from("convidados").upsert(g.map(x => ({id: slug(x.familia), familia: x.familia, pessoas: x.pessoas}))) : {};
+    const r2 = v.length ? await sb.from("vinculos").upsert(v.map(n => ({id: idVinc(n), nomes: n}))) : {};
+    if (r1.error || r2.error) msgU("Não foi possível salvar. Tente de novo.");
+    else { $("listaTxt").value = ""; await carregaListas(); msgU(g.length + " grupo(s) e " + v.length + " vínculo(s) salvo(s)."); }
+    $("subir").disabled = false;
+  };
+  $("salvarCfg").onclick = async () => {
+    const cfg = {}; CFG.forEach(([k,id]) => cfg[k] = $(id).value.trim());
+    if (cfg.whatsapp) cfg.whatsapp = cfg.whatsapp.replace(/\D/g, "");
+    $("salvarCfg").disabled = true; $("cfgMsg").textContent = "Salvando…";
+    const { error } = await sb.from("config").upsert({ id: "convite", dados: cfg });
+    if (error) $("cfgMsg").textContent = "Não foi possível salvar. Tente de novo.";
+    else { aplicarCfg(cfg); $("cfgMsg").textContent = "Dados salvos. O convite já mostra as novas informações."; }
+    $("salvarCfg").disabled = false;
+  };
+  let armL = false;
+  $("limpar").onclick = async () => {
+    if (!convidados.length && !vinculos.length) return;
+    if (!armL) { armL = true; $("limpar").textContent = "Toque de novo para apagar tudo"; setTimeout(() => { armL = false; $("limpar").textContent = "Apagar lista"; }, 4000); return; }
+    armL = false; $("limpar").textContent = "Apagar lista";
+    const [a, b] = await Promise.all([sb.from("convidados").delete().neq("id",""), sb.from("vinculos").delete().neq("id","")]);
+    if (a.error || b.error) msgU("Não foi possível apagar."); else { await carregaListas(); msgU("Lista apagada."); }
+  };
+  $("tabs").classList.remove("hide");
+  $("tabs").querySelectorAll("button").forEach(b => b.onclick = async () => {
+    if (b.dataset.t === "sair") { await sb.auth.signOut(); location.reload(); return; }
+    setTab(b.dataset.t);
+  });
+  $("busca").oninput = e => { busca = e.target.value; renderAdmin(); };
+  const fl = $("filtro");
+  const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
+  desenhaFiltro();
+  $("csv").onclick = () => {
+    const q = v => '"' + String(v).replace(/"/g,'""') + '"';
+    const rows = [["Família","Nome","Presença","Recado"].map(q).join(",")];
+    todas.forEach(f => f.pessoas.forEach(p => rows.push([f.familia, p.nome, p.vai ? "Vai" : "Não vai", f.mensagem||""].map(q).join(","))));
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["\ufeff" + rows.join("\n")], {type:"text/csv;charset=utf-8"}));
+    a.download = "confirmacoes.csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  await carregaRsvps();
+  sb.channel("rsvps-live").on("postgres_changes", {event:"*", schema:"public", table:"rsvps"}, carregaRsvps).subscribe();
+}
+
+// ---- Início ----
 (async () => {
+  if (!sb) return;
   try {
-    if (!(window.claude && claude.use)) return;
-    const [d, user, downloads] = await Promise.all([claude.use("db"), claude.use("user"), claude.use("downloads")]);
-    db = d;
-    if (db) db.collection("config").onSnapshot(s => { const x = s.docs[0]; if (x) aplicarCfg(x.data()); }, () => {});
-    if (db) db.collection("convidados").onSnapshot(s => { convidados = s.docs.map(x => x.data()); renderGrupos(); $("findBox").classList.toggle("hide", !convidados.length); buscar(); if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render(); $("uplMsg").textContent = convidados.length ? convidados.length + " grupo(s) na lista." : ""; }, () => {});
-    if (db) db.collection("vinculos").onSnapshot(s => { vinculos = s.docs.map(x => x.data()); renderRelac(); renderGrupos(); }, () => {});
-    if (db && user && await user.isOwner()) {
-      ehDono = true; renderGrupos();
-      $('addGrp').onclick = async () => {
-        const nome = $('novoGrp').value.trim(), nomes = $('novoGrpNomes').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
-        if (!nome) return msgGrp('Dê um nome ao grupo.');
-        if (!nomes.length) return msgGrp('Adicione pelo menos uma pessoa.');
-        const ex = convidados.find(x => slug(x.familia) === slug(nome));
-        const todos = [...(ex ? ex.pessoas : [])]; nomes.forEach(n => { if (!todos.some(y => norm(y) === norm(n))) todos.push(n); });
-        $('addGrp').disabled = true;
-        if (await salvaGrupo({familia: ex ? ex.familia : nome}, todos)) { $('novoGrp').value = ''; $('novoGrpNomes').value = ''; msgGrp('Grupo salvo.'); }
-        $('addGrp').disabled = false;
-      };
-      $('addVinc').onclick = async () => {
-        const nomes = $('novoVinc').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
-        if (nomes.length < 2) return msgGrp('Informe pelo menos duas pessoas.');
-        try { await db.collection('vinculos').doc(idVinc(nomes)).set({nomes}); $('novoVinc').value = ''; msgGrp('Vínculo salvo.'); } catch(e) { msgGrp('Não foi possível salvar. Tente de novo.'); }
-      };
-      const msgU = t => $("uplMsg").textContent = t;
-      $("arq").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $("listaTxt").value = String(r.result).replace(/^\ufeff/, ""); msgU("Arquivo carregado. Confira e toque em Salvar lista."); }; r.readAsText(f); e.target.value = ""; };
-      $("subir").onclick = async () => {
-        const g = parseLista($("listaTxt").value), v = parseVinculos($("listaTxt").value);
-        if (!g.length && !v.length) return msgU("Nenhum nome encontrado.");
-        $("subir").disabled = true; msgU("Salvando…");
-        try { await Promise.all([...g.map(x => db.collection("convidados").doc(slug(x.familia)).set(x)), ...v.map(n => db.collection("vinculos").doc(slug(n.join(" ")).slice(0,120)).set({nomes:n}))]); $("listaTxt").value = ""; msgU(g.length + " grupo(s) e " + v.length + " vínculo(s) salvo(s)."); }
-        catch(e) { msgU("Não foi possível salvar. Tente de novo."); }
-        $("subir").disabled = false;
-      };
-      $("salvarCfg").onclick = async () => {
-        const cfg = {}; CFG.forEach(([k,id]) => cfg[k] = $(id).value.trim());
-        if (cfg.whatsapp) cfg.whatsapp = cfg.whatsapp.replace(/\D/g, "");
-        $("salvarCfg").disabled = true; $("cfgMsg").textContent = "Salvando…";
-        try { await db.collection("config").doc("convite").set(cfg); aplicarCfg(cfg); $("cfgMsg").textContent = "Dados salvos. O convite já mostra as novas informações."; }
-        catch(e) { $("cfgMsg").textContent = "Não foi possível salvar. Tente de novo."; }
-        $("salvarCfg").disabled = false;
-      };
-      let armL = false;
-      $("limpar").onclick = async () => {
-        if (!convidados.length && !vinculos.length) return;
-        if (!armL) { armL = true; $("limpar").textContent = "Toque de novo para apagar tudo"; setTimeout(() => { armL = false; $("limpar").textContent = "Apagar lista"; }, 4000); return; }
-        armL = false; $("limpar").textContent = "Apagar lista";
-        try { await Promise.all([...convidados.map(x => db.collection("convidados").doc(slug(x.familia)).delete()), ...vinculos.map(v => db.collection("vinculos").doc(slug(v.nomes.join(" ")).slice(0,120)).delete())]); msgU("Lista apagada."); } catch(e) { msgU("Não foi possível apagar."); }
-      };
-      $("tabs").classList.remove("hide");
-      $("tabs").querySelectorAll("button").forEach(b => b.onclick = () => setTab(b.dataset.t));
-      $("busca").oninput = e => { busca = e.target.value; renderAdmin(); };
-      const fl = $("filtro");
-      const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
-      desenhaFiltro();
-      db.collection("rsvps").onSnapshot(s => { todas = s.docs.map(x => x.data()); renderAdmin(); }, () => {});
-      $("csv").onclick = async () => {
-        if (!downloads) return;
-        const q = v => '"' + String(v).replace(/"/g,'""') + '"';
-        const rows = [["Família","Nome","Presença","Recado"].map(q).join(",")];
-        todas.forEach(f => f.pessoas.forEach(p => rows.push([f.familia, p.nome, p.vai ? "Vai" : "Não vai", f.mensagem||""].map(q).join(","))));
-        try { await downloads.save({filename:"confirmacoes.csv", data:"\ufeff" + rows.join("\n")}); } catch(e) {}
-      };
-    }
-  } catch(e) {}
+    await Promise.all([carregaCfg(), carregaListas()]);
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && await souAdmin()) await ativaAdmin();
+  } catch(e) { console.error(e); }
 })();
 </script>
-
-</body></html>
+</body>
+</html>
