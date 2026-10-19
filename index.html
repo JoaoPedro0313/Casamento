@@ -80,6 +80,9 @@ textarea{resize:vertical;min-height:64px}
 .grp-top .link{font-size:12px;padding:2px 0;flex:none;text-align:right}
 .grp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .grp-chips .chip{margin:0}
+.grp-acts{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.grp-edit{display:flex;gap:14px;align-items:center;margin-top:8px}
+.grp-err{color:#b4533c;font-size:12px;margin-top:6px}
 .grp-add{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
 .grp-add input{flex:1;min-width:0;font-size:14px}
 .grp-btn{flex:none;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:8px 16px;font:500 12px Inter,sans-serif;cursor:pointer}
@@ -292,6 +295,20 @@ async function salvaGrupo(g, pessoas){
     return true;
   } catch(e) { msgGrp('Não foi possível salvar. Tente de novo.'); return false; }
 }
+async function renomeiaGrupo(g, novo){
+  novo = novo.trim();
+  if (!novo) return 'Dê um nome ao grupo.';
+  if (novo === g.familia) return null;
+  const idN = slug(novo), idA = slug(g.familia);
+  if (idN !== idA && convidados.some(x => slug(x.familia) === idN)) return 'Já existe um grupo com esse nome.';
+  try {
+    const col = db.collection('convidados');
+    await col.doc(idN).set({familia:novo, pessoas:g.pessoas});
+    if (idN !== idA) await col.doc(idA).delete();
+    msgGrp('Nome do grupo atualizado.');
+    return null;
+  } catch(e) { return 'Não foi possível salvar. Tente de novo.'; }
+}
 function renderGrupos(){
   if (!ehDono) return;
   const L = $('grpLista'); L.innerHTML = '';
@@ -311,9 +328,22 @@ function renderGrupos(){
     const add = () => { const n = inp.value.split(/[,;]/).map(x => x.trim()).filter(Boolean).filter(x => !g.pessoas.some(y => norm(y) === norm(x))); if (n.length) salvaGrupo(g, [...g.pessoas, ...n]); };
     inp.onkeydown = e => { if (e.key === 'Enter') add(); }; ok.onclick = add;
     row.append(inp, ok); d.appendChild(row);
+    const acts = document.createElement('div'); acts.className = 'grp-acts';
+    const ed = document.createElement('button'); ed.className = 'link'; ed.type = 'button'; ed.textContent = 'Editar nome';
+    ed.onclick = () => {
+      const inp = document.createElement('input'); inp.value = g.familia; inp.autocomplete = 'off'; inp.setAttribute('aria-label','Novo nome do grupo');
+      const sv = document.createElement('button'); sv.type = 'button'; sv.className = 'grp-btn'; sv.textContent = 'Salvar';
+      const cc = document.createElement('button'); cc.type = 'button'; cc.className = 'link'; cc.textContent = 'Cancelar';
+      const bar = document.createElement('div'); bar.className = 'grp-edit'; bar.append(sv, cc);
+      const er = document.createElement('div'); er.className = 'grp-err';
+      ttl.replaceChildren(inp, bar, er); acts.style.display = 'none'; inp.focus(); inp.select();
+      const salvar = async () => { sv.disabled = true; er.textContent = ''; const m = await renomeiaGrupo(g, inp.value); if (m) { er.textContent = m; sv.disabled = false; } else renderGrupos(); };
+      sv.onclick = salvar; cc.onclick = renderGrupos;
+      inp.onkeydown = e => { if (e.key === 'Enter') salvar(); else if (e.key === 'Escape') renderGrupos(); };
+    };
     let arm = false; const x = document.createElement('button'); x.className = 'link'; x.type = 'button'; x.textContent = 'Remover';
     x.onclick = () => { if (!arm){ arm = true; x.textContent = 'Toque de novo para remover'; return; } salvaGrupo(g, []); };
-    top.appendChild(x);
+    acts.append(ed, x); top.appendChild(acts);
     L.appendChild(d);
   });
   const V = $('vincLista'); V.innerHTML = '';
