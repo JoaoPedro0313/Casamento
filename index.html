@@ -101,8 +101,9 @@ textarea{resize:vertical;min-height:64px}
 .foot{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(14px,env(safe-area-inset-right,0px));z-index:5;margin:0;text-align:right}
 .foot .link{background:rgba(255,255,255,.7);border-radius:999px;padding:6px 12px;text-decoration:none;font-size:12px;letter-spacing:.04em}
 #bg{position:fixed;inset:0;z-index:0;pointer-events:none;--veu:.75}
-#bg div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
-#bg div.on{opacity:1}
+#bg div,.capa div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
+#bg div.on,.capa div.on{opacity:1}
+.capa{position:relative;width:100%;max-width:540px;aspect-ratio:4/3;margin:0 auto 38px;border-radius:22px;overflow:hidden;box-shadow:0 18px 48px rgba(36,52,82,.2)}
 #bg::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,var(--veu))}
 #fotosLista{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
 .thumb{position:relative;width:96px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
@@ -126,6 +127,7 @@ textarea{resize:vertical;min-height:64px}
 <main>
   <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="fotos" type="button">Fotos</button><button data-t="sair" type="button">Sair</button></nav>
   <section class="hero" id="heroSec">
+    <div class="capa hide" id="capa" aria-hidden="true"></div>
     <div class="eyebrow">Vamos nos casar</div>
     <h1 id="noivos"></h1>
     <div class="meta" id="meta"></div>
@@ -237,15 +239,19 @@ textarea{resize:vertical;min-height:64px}
   </section>
   <section id="fotosSec" class="admin cfg hide">
     <h2>Fotos da tela inicial</h2>
-    <p class="hint">As fotos aparecem ao fundo da tela inicial do convite. Com mais de uma, elas alternam sozinhas. Nada vai ao ar até você tocar em Salvar fotos.</p>
+    <p class="hint">Escolha as fotos e como elas aparecem na tela inicial do convite. Com mais de uma, elas alternam sozinhas. Nada vai ao ar até você tocar em Salvar fotos.</p>
     <div class="cfg-grp">
-      <h3>Fotos de fundo (até 5)</h3>
+      <h3>Como mostrar na tela inicial</h3>
+      <div class="field"><div class="seg" id="modoSeg"></div></div>
+    </div>
+    <div class="cfg-grp">
+      <h3>Fotos (até 5)</h3>
       <div class="field">
         <div id="fotosLista"></div>
         <label class="link" id="fotoAdd" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer">+ Adicionar fotos<input type="file" id="fotoArq" accept="image/*" multiple class="hide"></label>
         <p class="hint" style="margin:10px 0 0">As imagens são reduzidas automaticamente. Use fotos na horizontal para um resultado melhor no computador.</p>
       </div>
-      <div class="field"><label for="veu">Véu claro sobre a foto (para o texto ficar legível)</label><input id="veu" type="range" min="30" max="95" value="75"></div>
+      <div class="field" id="veuField"><label for="veu">Véu claro sobre a foto de fundo (para o texto ficar legível)</label><input id="veu" type="range" min="10" max="95" value="75"></div>
     </div>
     <div class="cfg-save">
       <button class="btn" id="salvarFotos" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar fotos</button>
@@ -327,19 +333,31 @@ function aplicarCfg(c){
   CFG.forEach(([k,id]) => { const el = $(id); if (el && document.activeElement !== el) el.value = C[k] || ""; });
   if (Array.isArray(c.fotos)) FOTOS = c.fotos.filter(f => typeof f === "string" && f.startsWith("data:image/"));
   if (typeof c.veu === "number") VEU = c.veu;
-  $("veu").value = VEU; desenhaFundo(); desenhaFotosAdmin();
+  if (c.fotosModo === "fundo" || c.fotosModo === "destaque") MODO = c.fotosModo;
+  $("veu").value = VEU; desenhaModo(); desenhaFundo(); desenhaFotosAdmin();
 }
 
 // ---- Fotos de fundo ----
 const MAX_FOTOS = 5;
-let FOTOS = [], VEU = 75, bgTimer = null;
+let FOTOS = [], VEU = 75, MODO = "destaque", bgTimer = null;
 function desenhaFundo(){
-  const bg = $("bg"); clearInterval(bgTimer); bg.innerHTML = "";
-  bg.classList.toggle("hide", !FOTOS.length);
+  clearInterval(bgTimer);
+  const bg = $("bg"), capa = $("capa"), alvo = MODO === "fundo" ? bg : capa;
+  bg.innerHTML = ""; capa.innerHTML = ""; bg.classList.add("hide"); capa.classList.add("hide");
   if (!FOTOS.length) return;
+  alvo.classList.remove("hide");
   bg.style.setProperty("--veu", VEU / 100);
-  FOTOS.forEach((src, i) => { const d = document.createElement("div"); d.style.backgroundImage = 'url("' + src + '")'; if (!i) d.className = "on"; bg.appendChild(d); });
-  if (FOTOS.length > 1){ let k = 0; const ds = bg.children; bgTimer = setInterval(() => { ds[k].classList.remove("on"); k = (k + 1) % ds.length; ds[k].classList.add("on"); }, 6000); }
+  FOTOS.forEach((src, i) => { const d = document.createElement("div"); d.style.backgroundImage = 'url("' + src + '")'; if (!i) d.className = "on"; alvo.appendChild(d); });
+  if (FOTOS.length > 1){ let k = 0; const ds = alvo.children; bgTimer = setInterval(() => { ds[k].classList.remove("on"); k = (k + 1) % ds.length; ds[k].classList.add("on"); }, 6000); }
+}
+function desenhaModo(){
+  const seg = $("modoSeg"); seg.innerHTML = "";
+  [["destaque","Foto em destaque"],["fundo","Fundo da tela"]].forEach(([k, t]) => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (MODO === k) b.className = "on";
+    b.onclick = () => { MODO = k; desenhaModo(); desenhaFundo(); $("fotosMsg").textContent = "Toque em Salvar fotos para publicar."; };
+    seg.appendChild(b);
+  });
+  $("veuField").classList.toggle("hide", MODO !== "fundo");
 }
 function desenhaFotosAdmin(){
   const box = $("fotosLista"); box.innerHTML = "";
@@ -372,6 +390,7 @@ $("fotoArq").onchange = async e => {
   $("fotosMsg").textContent = falhou ? "Alguma foto não pôde ser lida (use JPG ou PNG). As demais foram adicionadas — toque em Salvar fotos." : "Toque em Salvar fotos para publicar.";
 };
 $("verConvite").onclick = () => setTab("convite");
+desenhaModo();
 $("veu").oninput = e => { VEU = +e.target.value; $("bg").style.setProperty("--veu", VEU / 100); };
 CFG.forEach(([k,id]) => { const el = $(id); if (el) el.value = C[k] || ""; });
 
@@ -669,10 +688,10 @@ async function ativaAdmin(){
   async function salvaConfig(btn, msg, ok){
     const cfg = {}; CFG.forEach(([k,id]) => cfg[k] = $(id).value.trim());
     if (cfg.whatsapp) cfg.whatsapp = cfg.whatsapp.replace(/\D/g, "");
-    cfg.fotos = FOTOS; cfg.veu = VEU;
+    cfg.fotos = FOTOS; cfg.veu = VEU; cfg.fotosModo = MODO;
     btn.disabled = true; msg.textContent = "Salvando…";
     const { error } = await sb.from("config").upsert({ id: "convite", dados: cfg });
-    if (error) msg.textContent = "Não foi possível salvar. Tente de novo.";
+    if (error) { console.error(error); msg.textContent = "Não foi possível salvar. Tente de novo (se tiver muitas fotos, remova algumas)."; }
     else { aplicarCfg(cfg); msg.textContent = ok; }
     btn.disabled = false;
   }
