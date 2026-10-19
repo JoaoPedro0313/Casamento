@@ -2,32 +2,33 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
-<title>João &amp; Layla · Confirmação de presença</title>
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Confirmação de presença</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
-:root{--bg:#ffffff;--card:#fff;--fg:#243452;--mut:#667898;--gold:#a8842f;--blob:#e9eff8;--soft:#e9eff8;--line:#d3ddee;--btn:#92a8d1;--btnfg:#1b2a47;--pill:rgba(255,255,255,.8);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141b2b;--card:#1c2538;--fg:#e4eaf6;--mut:#9fb0cf;--gold:#d3b86c;--blob:#243049;--soft:#243049;--line:#2e3b57;--btn:#92a8d1;--btnfg:#1b2a47;--pill:rgba(28,37,56,.85)}}
-:root[data-theme="dark"]{--bg:#141b2b;--card:#1c2538;--fg:#e4eaf6;--mut:#9fb0cf;--gold:#d3b86c;--blob:#243049;--soft:#243049;--line:#2e3b57;--btn:#92a8d1;--btnfg:#1b2a47;--pill:rgba(28,37,56,.85)}
+:root{--bg:#ffffff;--card:#fff;--blob:#e9eff8;--soft:#e9eff8;--fg:#243452;--mut:#667898;--line:#d3ddee;--gold:#a8842f;--btn:#92a8d1;--btnfg:#1b2a47;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg) linear-gradient(var(--soft),var(--bg) 480px) no-repeat;min-height:100vh;color:var(--fg);font:300 16px/1.6 Inter,system-ui,sans-serif}
-.acesso{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(14px,env(safe-area-inset-right,0px));z-index:5;background:var(--pill);border-radius:999px;padding:6px 12px;font-size:12px;letter-spacing:.04em;color:var(--mut);opacity:.8}
-main{max-width:1180px;margin:0 auto;padding:56px max(20px,env(safe-area-inset-right,0px)) 64px max(20px,env(safe-area-inset-left,0px))}
-.card{position:relative;overflow:hidden;background:var(--card);border-radius:26px;padding:40px 28px 36px;box-shadow:0 14px 44px rgba(36,52,82,.12)}
-.card>*{position:relative;z-index:1}
-.card>.dec{position:absolute;z-index:0;pointer-events:none}
+body{margin:0;background:var(--bg) linear-gradient(var(--soft),var(--bg) 480px) no-repeat;color:var(--fg);font:300 16px/1.6 Inter,system-ui,sans-serif}
+html,body{min-height:100%}
+main{position:relative;z-index:1;width:100%;margin:0;padding:56px max(20px,env(safe-area-inset-right,0px)) 64px max(20px,env(safe-area-inset-left,0px))}
+.wave{display:none}
+.hero{position:relative;overflow:hidden;background:var(--card);border-radius:26px;padding:72px 24px 36px;box-shadow:0 14px 44px rgba(36,52,82,.12);margin:0 0 44px}
+.hero>*{position:relative;z-index:1}
+.hero>.dec,.hero>#heroFotos{position:absolute;z-index:0;pointer-events:none}
 .b1{top:-70px;left:-50px;width:330px;height:250px;background:var(--blob);border-radius:30% 70% 62% 38%/34% 60% 40% 66%}
 .b2{bottom:-60px;right:-40px;width:380px;height:190px;background:var(--blob);border-radius:50% 50% 0 0/100% 100% 0 0}
 .l1{top:0;left:0;width:240px;height:260px}.l2{bottom:0;right:0;width:260px;height:240px}
 .grid{display:grid;gap:12px;grid-template-columns:1fr}
 .txt{text-align:center;order:2}
-.eyebrow{font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin:0}
+.eyebrow{font-size:14px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
 h1{font:400 clamp(54px,9vw,92px)/.98 "Cormorant Garamond",Georgia,serif;margin:14px 0 22px;letter-spacing:.01em;text-transform:uppercase}
-h1 em{display:block;font-style:normal;color:var(--gold);font-size:.8em;line-height:1}
-.meta{color:var(--mut);font-size:17px;line-height:1.95;margin:0}
-.mapa{display:inline-block;margin-top:20px;padding:10px 24px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font:500 12px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none}
+h1 span,h1 em{display:block}
+h1 em{font-style:normal;color:var(--gold);font-size:.8em;line-height:1}
+.mapa{display:inline-block;margin-top:22px;padding:10px 22px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font:500 13px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;background:rgba(255,255,255,.55)}
+.mapa:hover,.mapa:focus{background:var(--gold);color:#fff;outline:0}
 .foto{order:1;position:relative;width:min(100%,460px);aspect-ratio:1.12;margin:0 auto}
 .foto svg.ln,.foto svg.sp{position:absolute;pointer-events:none}
 .foto svg.ln{inset:0;width:100%;height:100%}
@@ -38,100 +39,815 @@ h1 em{display:block;font-style:normal;color:var(--gold);font-size:.8em;line-heig
 .hd{border-radius:50%;background:#d3ddee}
 .hex .a{left:30%;top:29%;width:16%;aspect-ratio:1}.hex .b{left:50%;top:32%;width:14%;aspect-ratio:1;background:#dfe7f4}
 .hex .c{left:29%;top:47%;width:22%;bottom:0;background:#44526f}.hex .d{left:52%;top:50%;width:21%;bottom:0;background:#8a9bbd}
-.sp{width:17%}
-.sp.s1{left:2%;top:22%}.sp.s2{left:0;top:63%}
+.hex:has(.capa:not(.hide)) i{display:none}
+.sp{width:17%}.sp.s1{left:2%;top:22%}.sp.s2{left:0;top:63%}
 .cd{grid-column:1/-1;order:3;text-align:center;border-top:1px solid var(--line);margin-top:20px;padding-top:26px}
-.cd p{margin:0 0 14px;font:500 12px Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--fg)}
-.cnt{display:flex;justify-content:center;gap:10px;margin-bottom:34px}
-.cnt div{min-width:62px;padding:10px 6px 8px;border-radius:10px;background:var(--soft)}
-.cnt b{display:block;font:400 34px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums tabular-nums}
-.cnt span{display:block;margin-top:6px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
-.form{max-width:620px;margin:44px auto 0;padding:0 4px}
-
-
-.form>.fd{display:none}
-
-
-
-
-h2{font:500 28px "Cormorant Garamond",Georgia,serif;margin:0 0 4px}
-.sub{color:var(--mut);font-size:14px;margin:0 0 26px}
-.row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;padding:12px 0;border-bottom:1px solid var(--line)}
-.row span{font-size:16px}
-.seg{display:flex;gap:2px}
-.seg button{font:400 13px Inter,sans-serif;background:transparent;color:var(--mut);border:0;padding:8px 14px;border-radius:999px;cursor:pointer}
-.seg button.on{background:var(--btn);color:var(--btnfg)}
-.link{background:none;border:0;color:var(--mut);font:inherit;font-size:14px;padding:14px 0;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
-label{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin:14px 0 4px}
-textarea{width:100%;min-height:64px;font:inherit;color:var(--fg);background:transparent;border:0;border-bottom:1px solid var(--line);outline:0;resize:vertical;padding:8px 0}
-.btn{width:100%;margin-top:26px;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:15px;font:500 14px Inter,sans-serif;letter-spacing:.06em;cursor:pointer}
+.cd:has(.count.hide){display:none}
+.cd p{margin:0 0 14px;font:500 12px Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase}
+.count{display:flex;justify-content:center;gap:10px}
+.count div{min-width:62px;padding:10px 6px 8px;border-radius:10px;background:var(--soft)}
+.count b{display:block;font:400 34px/1 "Cormorant Garamond",Georgia,serif;font-variant-numeric:lining-nums tabular-nums}
+.count span{display:block;margin-top:6px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut)}
+.count .hoje{min-width:0;background:none;font:400 36px/1.1 "Cormorant Garamond",Georgia,serif;color:var(--gold)}
+.side{position:relative}
+.side>section{position:relative;z-index:1}
+.side>.fd{position:absolute;z-index:0;pointer-events:none;display:none}
+.fb1{top:-90px;right:-70px;width:330px;height:270px;background:var(--blob);border-radius:62% 38% 40% 60%/50% 60% 40% 50%}
+.fl1{top:0;right:0;width:260px;height:260px}.fl2{bottom:0;left:0;width:240px;height:240px}
+.fs1{right:7%;top:34%;width:62px;transform:scaleX(-1)}.fs2{left:7%;bottom:22%;width:62px}
 @media (min-width:900px){
-main{max-width:1360px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);column-gap:clamp(40px,5vw,80px);align-items:center;min-height:100vh}
-.form{margin:0;max-width:none}
+main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);align-items:center;max-width:1360px;margin:40px auto;min-height:calc(100vh - 80px);padding:0;overflow:hidden;background:var(--card);border-radius:28px;box-shadow:0 14px 44px rgba(36,52,82,.12)}
+.wave{display:block;position:absolute;left:0;bottom:0;width:100%;height:clamp(180px,26vh,260px);z-index:0;pointer-events:none}
+.tabs{grid-column:1/-1;grid-row:1;padding-top:20px}
+.hero{grid-column:1;grid-row:2;background:transparent;box-shadow:none;border-radius:0;overflow:visible;margin:0;padding:56px 44px 44px}
+.hero>.b2,.hero>.l2{display:none}
+.side{grid-column:2;grid-row:2;align-self:stretch;display:flex;flex-direction:column;justify-content:center;padding:56px max(32px,calc((100% - 520px)/2))}
+.side>.fd{display:block}
+.fl2{-webkit-mask-image:linear-gradient(to right,transparent,#000 45%);mask-image:linear-gradient(to right,transparent,#000 45%)}
+.fl1{-webkit-mask-image:linear-gradient(to bottom left,#000 35%,transparent 95%);mask-image:linear-gradient(to bottom left,#000 35%,transparent 95%)}
+#adminSec,#fotosSec{grid-column:1/-1;grid-row:2;padding:24px 48px 48px}
+main:has(#adminSec:not(.hide)) .side,main:has(#fotosSec:not(.hide)) .side{display:none}
 h1{font-size:clamp(54px,6vw,84px)}
-.card{padding:56px 44px 44px}
 .grid{grid-template-columns:1fr 1fr;align-items:center;column-gap:24px}
 .txt{order:1}.foto{order:2;width:100%;max-width:500px}
-.cnt div{min-width:72px}.cnt b{font-size:40px}
+.count div{min-width:72px}.count b{font-size:40px}
 }
+.meta{color:var(--mut);font-size:clamp(17px,4.6vw,21px);line-height:1.9}
+h2{font:500 26px "Cormorant Garamond",Georgia,serif;margin:0 0 6px}
+.sub{color:var(--mut);font-size:14px;margin:0 0 28px}
+label{display:block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin:0 0 4px}
+input,textarea{width:100%;font:inherit;color:var(--fg);background:transparent;border:0;border-bottom:1px solid var(--line);padding:8px 0;border-radius:0;outline:0}
+input:focus,textarea:focus{border-bottom-color:var(--gold)}
+textarea{resize:vertical;min-height:64px}
+.field{margin-bottom:28px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:22px}
+.row .nm{flex:1 1 100%;width:100%}
+.seg{display:flex;gap:2px;flex:none}
+.seg button{font:400 13px Inter,sans-serif;background:transparent;color:var(--mut);border:0;padding:8px 12px;cursor:pointer;border-radius:999px}
+.seg button.on{background:var(--btn);color:var(--btnfg)}
+.link{background:none;border:0;color:var(--mut);font:inherit;font-size:14px;padding:4px 0;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.rm{color:var(--mut);background:none;border:0;cursor:pointer;font-size:18px;padding:6px 2px;line-height:1}
+.btn{width:100%;margin-top:12px;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:15px;font:500 14px Inter,sans-serif;letter-spacing:.06em;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:default}
+.err{color:#b4533c;font-size:14px;min-height:20px;margin-top:12px;text-align:center}
+.done{text-align:center;padding:24px 0}
+.hide{display:none}
+.admin{padding-top:24px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px 22px;justify-content:center;margin-bottom:8px;padding-right:0}
+.tabs.hide{display:none}
+.tabs button{background:none;border:0;font:400 12px Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);padding:8px 0;cursor:pointer;border-bottom:1px solid transparent}
+.tabs button.on{color:var(--fg);border-bottom-color:var(--gold)}
+.filters{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px}
+.filters input{flex:1;min-width:180px}
+.stats{display:flex;gap:28px;margin:18px 0 28px}
+.stats b{display:block;font:400 34px "Cormorant Garamond",Georgia,serif;color:var(--gold)}
+.stats span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.fam{padding:14px 0;border-bottom:1px solid var(--line)}
+.fam h3{font-weight:500;font-size:15px;margin:0}
+.fam p{margin:2px 0 0;font-size:14px;color:var(--mut)}
+.fam .msg{font-style:italic}
+.find{margin-bottom:36px}
+.res{margin-top:6px}
+.res button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:12px 2px;font:inherit;color:var(--fg);cursor:pointer}
+.res button small{display:block;color:var(--mut);font-size:13px}
+.res button:hover,.res button:focus{background:var(--soft);outline:0}
+.res .none{color:var(--mut);font-size:14px;padding:10px 0}
+.upl{border-top:1px solid var(--line);margin-top:36px;padding-top:28px}
+.upl textarea{border:1px solid var(--line);padding:10px;min-height:120px;font-size:14px;border-radius:6px}
+.upl .acts{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.upl .hint{color:var(--mut);font-size:13px;margin:0 0 12px}
+.upl .ok{color:var(--mut);font-size:14px;margin-top:10px}
+.nm{position:relative}
+.sug{margin-top:4px}
+.relac{margin:0 0 4px}
+.relac .t{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:8px}
+.chip{font:400 13px Inter,sans-serif;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:7px 14px;margin:0 8px 8px 0;cursor:pointer}
+#grpLista{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.grp{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--bg)}
+.grp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.grp-top h3{font:500 22px/1.1 "Cormorant Garamond",Georgia,serif;margin:0 0 2px}
+.grp-n{font-size:12px;color:var(--mut)}
+.grp-top .link{font-size:12px;padding:2px 0;flex:none;text-align:right}
+.grp-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.grp-chips .chip{margin:0}
+.grp-acts{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.grp-edit{display:flex;gap:14px;align-items:center;margin-top:8px}
+.grp-err{color:#b4533c;font-size:12px;margin-top:6px}
+.grp-add{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:12px}
+.grp-add input{flex:1;min-width:0;font-size:14px}
+.grp-btn{flex:none;background:var(--btn);color:var(--btnfg);border:0;border-radius:999px;padding:8px 16px;font:500 12px Inter,sans-serif;cursor:pointer}
+
+.foot{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);right:max(14px,env(safe-area-inset-right,0px));z-index:5;margin:0;text-align:right}
+.foot .link{background:rgba(255,255,255,.7);border-radius:999px;padding:6px 12px;text-decoration:none;font-size:12px;letter-spacing:.04em}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;--veu:.75}
+#bg div,.capa div,#heroFotos div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
+#bg div.on,.capa div.on,#heroFotos div.on{opacity:1}
+.capa{position:absolute;inset:0;z-index:2}
+#heroFotos::after{content:"";position:absolute;inset:0;background:rgba(20,30,52,.5)}
+#tira{display:flex;justify-content:center;gap:10px;margin:28px auto 0;max-width:560px}
+#tira div{flex:1 1 0;max-width:170px;aspect-ratio:3/4;border-radius:12px;background-size:cover;background-position:center}
+body[data-modelo=cheia] .foto,body[data-modelo=fundo] .foto,body[data-modelo=tira] .foto{display:none}
+body[data-modelo=cheia] .hero>.dec{display:none}
+body[data-modelo=cheia] .hero{overflow:hidden;border-radius:22px;min-height:min(72vh,580px);display:flex;flex-direction:column;justify-content:center}
+body[data-modelo=cheia] h1,body[data-modelo=cheia] .count b{color:#fff}
+body[data-modelo=cheia] .meta,body[data-modelo=cheia] .count span,body[data-modelo=cheia] .cd p{color:rgba(255,255,255,.92)}
+body[data-modelo=cheia] .eyebrow,body[data-modelo=cheia] .count .hoje{color:#f1d9a0}
+body[data-modelo=cheia] .mapa{color:#fff;border-color:rgba(255,255,255,.85);background:rgba(255,255,255,.14)}
+body[data-modelo=cheia] .count div{background:rgba(255,255,255,.16)}
+body[data-modelo=cheia] .cd{border-color:rgba(255,255,255,.35)}
+body[data-modelo=fundo] main,body[data-modelo=fundo] .hero{background:transparent}
+body[data-modelo=arco] .hexw,body[data-modelo=metade] .hexw{display:none}
+body[data-modelo=arco] .hex{clip-path:none;border-radius:999px 999px 20px 20px;inset:2% 24%}
+body[data-modelo=metade] .hex{inset:4% 0}
+.modelos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mod{display:block;text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px;cursor:pointer;font:400 13px Inter,sans-serif;color:var(--fg)}
+.mod.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.mod span{display:block;margin-top:8px}
+.mm{position:relative;height:96px;border-radius:8px;background:#fff;border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.mm.row{flex-direction:row;gap:0}
+.mm .mp{background-color:#b9c8e4;background-image:var(--f0,none);background-size:cover;background-position:center;flex:none}
+.mm .full{position:absolute;inset:0}
+.mm .sc{position:absolute;inset:0}
+.mm i{display:block;height:4px;border-radius:2px;background:#8a9bbd;position:relative}
+.mm i.mn{height:8px;background:#44526f}
+.mm i.w{background:#fff}
+#bg::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,var(--veu))}
+#fotosLista{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.thumb{position:relative;width:96px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb button{position:absolute;top:3px;right:3px;width:22px;height:22px;border:0;border-radius:50%;background:rgba(255,255,255,.9);color:var(--fg);font-size:15px;line-height:1;cursor:pointer;padding:0}
+#veu{padding:0;border:0}
+.cfg{max-width:980px}
+.cfg-grp{background:rgba(255,255,255,.82);border:1px solid var(--line);border-radius:16px;padding:22px 24px 6px;margin-bottom:16px}
+.cfg-grp>h3{font:500 11px Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 18px}
+.cfg-grid{display:grid;grid-template-columns:1fr;column-gap:28px}
+.cfg-grid .span2{grid-column:1/-1}
+@media (min-width:700px){.cfg-grid{grid-template-columns:1fr 1fr}}
+.cfg-save{position:sticky;bottom:0;display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),var(--bg) 35%)}
+.cfg-save .ok{margin:0}
+.foot .link{font-size:12px;opacity:.7}
+#loginSec .field{margin-bottom:22px}
 </style>
 </head>
 <body>
-<div class="acesso">Acesso dos noivos</div>
+<div id="bg" class="hide" aria-hidden="true"></div>
 <main>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
 <g id="sprig"><path d="M10 100 C 14 70 30 40 58 8" fill="none" stroke="#8a9bbd" stroke-width="1.4"/>
 <ellipse cx="20" cy="76" rx="5" ry="11" transform="rotate(-38 20 76)" fill="#9db3d9"/><ellipse cx="33" cy="54" rx="5" ry="11" transform="rotate(-30 33 54)" fill="#9db3d9"/><ellipse cx="47" cy="32" rx="4.5" ry="10" transform="rotate(-22 47 32)" fill="#9db3d9"/><ellipse cx="57" cy="14" rx="4" ry="9" transform="rotate(-14 57 14)" fill="#9db3d9"/>
 <circle cx="4" cy="62" r="3.4" fill="#92a8d1"/><circle cx="14" cy="50" r="2.4" fill="#92a8d1"/></g>
 </defs></svg>
+<svg class="wave" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true"><path d="M0 140 C 200 70 420 70 620 125 S 1000 225 1200 150 S 1380 80 1440 100 L1440 240 L0 240 Z" fill="var(--blob)"/></svg>
+  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="fotos" type="button">Fotos</button><button data-t="sair" type="button">Sair</button></nav>
+  <section class="hero" id="heroSec">
+    <div class="dec b1"></div><div class="dec b2"></div>
+    <svg class="dec l1" viewBox="0 0 240 260" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="0" y1="140" x2="130" y2="0"/><line x1="0" y1="200" x2="215" y2="0"/><line x1="40" y1="260" x2="180" y2="40"/></svg>
+    <svg class="dec l2" viewBox="0 0 260 240" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="260" y1="30" x2="110" y2="240"/><line x1="260" y1="100" x2="190" y2="240"/><line x1="170" y1="130" x2="130" y2="240"/></svg>
+    <div class="hide" id="heroFotos" aria-hidden="true"></div>
+    <div class="grid">
+      <div class="txt hero-txt">
+        <div class="eyebrow">Vamos nos casar</div>
+        <h1 id="noivos"></h1>
+        <div class="meta" id="meta"></div>
+        <a class="mapa hide" id="mapaLink" target="_blank" rel="noopener">Ver localização no mapa</a>
+        <div class="hide" id="tira" aria-hidden="true"></div>
+      </div>
+      <div class="foto">
+        <div class="hexw"></div>
+        <div class="hex"><i class="hd a"></i><i class="hd b"></i><i class="c"></i><i class="d"></i><div class="capa hide" id="capa" aria-hidden="true"></div></div>
+        <svg class="ln" viewBox="0 0 440 400" fill="none" stroke="#a8842f" stroke-width=".9" opacity=".7"><polygon points="125,35.5 315,35.5 410,200 315,364.5 125,364.5 30,200" transform="rotate(8 220 200)"/><polygon points="125,35.5 315,35.5 410,200 315,364.5 125,364.5 30,200" transform="rotate(-6 220 200) scale(1.04) translate(-8 -8)"/></svg>
+        <svg class="sp s1" viewBox="0 0 70 104"><use href="#sprig"/></svg>
+        <svg class="sp s2" viewBox="0 0 70 104"><use href="#sprig"/></svg>
+      </div>
+      <div class="cd"><p>Contagem regressiva para o grande dia</p><div class="count hide" id="count" aria-live="off"></div></div>
+    </div>
+  </section>
 
-<section class="card" aria-label="Convite">
-  <div class="dec b1"></div><div class="dec b2"></div>
-  <svg class="dec l1" viewBox="0 0 240 260" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="0" y1="140" x2="130" y2="0"/><line x1="0" y1="200" x2="215" y2="0"/><line x1="40" y1="260" x2="180" y2="40"/></svg>
-  <svg class="dec l2" viewBox="0 0 260 240" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="260" y1="30" x2="110" y2="240"/><line x1="260" y1="100" x2="190" y2="240"/><line x1="170" y1="130" x2="130" y2="240"/></svg>
+  <div class="side" id="side">
+  <div class="fd fb1"></div>
+  <svg class="fd fl1" viewBox="0 0 260 260" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="260" y1="150" x2="130" y2="0"/><line x1="260" y1="210" x2="45" y2="0"/><line x1="260" y1="250" x2="120" y2="0"/></svg>
+  <svg class="fd fl2" viewBox="0 0 240 240" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="0" y1="90" x2="110" y2="240"/><line x1="0" y1="20" x2="190" y2="240"/><line x1="0" y1="150" x2="60" y2="240"/></svg>
+  <svg class="fd fs1" viewBox="0 0 70 104"><use href="#sprig"/></svg>
+  <svg class="fd fs2" viewBox="0 0 70 104"><use href="#sprig"/></svg>
+  <section id="formSec">
+    <h2>Confirme sua presença</h2>
+    <p class="sub" id="prazo">Adicione cada pessoa da sua família e marque quem vai.</p>
+    <div class="find hide" id="findBox">
+      <label for="busca2">Encontre seu nome na lista</label>
+      <input id="busca2" placeholder="Digite seu nome ou sobrenome" autocomplete="off">
+      <div class="res" id="res"></div>
+    </div>
+    <input id="fam" type="hidden">
+    <div id="restoForm">
+    <div id="pessoas"></div>
+    <div class="field" style="margin-top:12px"><label for="msg">Recado para os noivos (opcional)</label><textarea id="msg"></textarea></div>
+    <button class="btn" id="enviar" type="button">Enviar confirmação</button>
+    <div class="err" id="err"></div>
+    </div>
+  </section>
 
-  <div class="grid">
-    <div class="txt">
-      <p class="eyebrow">Vamos nos casar</p>
-      <h1>João<em>&amp;</em>Layla</h1>
-      <p class="meta">11 de dezembro de 2026 · 16h30<br>Igreja Matriz<br>Jacobina, BA</p>
-      <a class="mapa" href="#">Ver localização no mapa</a>
-    </div>
-    <div class="foto">
-      <div class="hexw"></div>
-      <div class="hex"><i class="hd a"></i><i class="hd b"></i><i class="c"></i><i class="d"></i></div>
-      <svg class="ln" viewBox="0 0 440 400" fill="none" stroke="#a8842f" stroke-width=".9" opacity=".7"><polygon points="125,35.5 315,35.5 410,200 315,364.5 125,364.5 30,200" transform="rotate(8 220 200)"/><polygon points="125,35.5 315,35.5 410,200 315,364.5 125,364.5 30,200" transform="rotate(-6 220 200) scale(1.04) translate(-8 -8)"/></svg>
-      <svg class="sp s1" viewBox="0 0 70 104"><use href="#sprig"/></svg>
-      <svg class="sp s2" viewBox="0 0 70 104"><use href="#sprig"/></svg>
-    </div>
-    <div class="cd">
-      <p>Contagem regressiva para o grande dia</p>
-      <div class="cnt" aria-live="off"><div><b id="d">--</b><span>Dias</span></div><div><b id="h">--</b><span>Horas</span></div><div><b id="m">--</b><span>Min</span></div><div><b id="s">--</b><span>Seg</span></div></div>
-    </div>
+  <section id="doneSec" class="done hide">
+    <h2>Obrigado!</h2>
+    <p class="sub" id="doneTxt"></p>
+    <button class="link" id="editar" type="button">Alterar minha resposta</button>
+  </section>
+
+  <section id="loginSec" class="hide">
+    <h2>Acesso dos noivos</h2>
+    <p class="sub">Digite o código de acesso.</p>
+    <div class="field"><label for="lgSenha">Código</label><input id="lgSenha" type="password" inputmode="numeric" autocomplete="off"></div>
+    <button class="btn" id="entrar" type="button">Entrar</button>
+    <div class="err" id="lgErr"></div>
+    <button class="link" id="voltar" type="button">Voltar ao convite</button>
+  </section>
+
   </div>
-</section>
 
-<section class="form">
-  <h2>Confirme sua presença</h2>
-  <p class="sub">Adicione cada pessoa da sua família e marque quem vai.</p>
-  <div class="row"><span>João Silva</span><div class="seg"><button class="on" type="button">Vai</button><button type="button">Não vai</button></div></div>
-  <div class="row"><span>Maria Silva</span><div class="seg"><button class="on" type="button">Vai</button><button type="button">Não vai</button></div></div>
-  <button class="link" type="button">+ Adicionar pessoa</button>
-  <label for="msg">Recado para os noivos (opcional)</label>
-  <textarea id="msg"></textarea>
-  <button class="btn" type="button">Enviar confirmação</button>
-</section>
+  <section id="adminSec" class="admin hide">
+    <h2>Painel dos noivos</h2>
+    <div class="stats"><div><b id="sVai">0</b><span>Vão</span></div><div><b id="sNao">0</b><span>Não vão</span></div><div><b id="sFam">0</b><span>Famílias</span></div></div>
+    <div class="filters"><input id="busca" placeholder="Buscar família ou nome" autocomplete="off"><div class="seg" id="filtro"></div></div>
+    <div id="lista"></div>
+    <button class="link" id="csv" type="button" style="margin-top:20px">Baixar planilha (CSV)</button>
+
+    <div class="upl cfg">
+      <h2>Dados do convite</h2>
+      <p class="hint">Edite as informações que aparecem no topo do convite. Nada vai ao ar até você tocar em Salvar.</p>
+
+      <div class="cfg-grp">
+        <h3>Quem e quando</h3>
+        <div class="cfg-grid">
+          <div class="field span2"><label for="cfgNoivos">Nomes dos noivos</label><input id="cfgNoivos" placeholder="Ex.: Ana & Pedro" autocomplete="off"></div>
+          <div class="field"><label for="cfgData">Data</label><input id="cfgData" placeholder="Ex.: 12 de dezembro de 2026" autocomplete="off"></div>
+          <div class="field"><label for="cfgHora">Horário</label><input id="cfgHora" placeholder="Ex.: 16h30" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="cfg-grp">
+        <h3>Onde</h3>
+        <div class="cfg-grid">
+          <div class="field"><label for="cfgLocal">Local da cerimônia</label><input id="cfgLocal" placeholder="Ex.: Igreja Matriz" autocomplete="off"></div>
+          <div class="field"><label for="cfgCidade">Cidade</label><input id="cfgCidade" placeholder="Ex.: Jacobina, BA" autocomplete="off"></div>
+          <div class="field span2"><label for="cfgMapa">Link do mapa (Google Maps)</label><input id="cfgMapa" placeholder="Cole o link do Google Maps" inputmode="url" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="cfg-grp">
+        <h3>Confirmações</h3>
+        <div class="cfg-grid">
+          <div class="field"><label for="cfgPrazo">Prazo para confirmar (opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
+          <div class="field"><label for="cfgZap">WhatsApp dos noivos (opcional, só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
+        </div>
+      </div>
+
+      <div class="cfg-save">
+        <button class="btn" id="salvarCfg" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar dados</button>
+        <div class="ok" id="cfgMsg"></div>
+      </div>
+    </div>
+
+    <div class="upl" id="grpBox">
+      <h2>Grupos e vínculos</h2>
+      <p class="hint">Crie grupos (família, casal, amigos) e coloque os convidados dentro. Quando alguém do grupo for escolhido na confirmação, os outros são oferecidos para adicionar junto.</p>
+      <div id="grpLista"></div>
+      <div class="field" style="margin-top:20px"><label for="novoGrp">Novo grupo</label><input id="novoGrp" placeholder="Ex.: Família Silva" autocomplete="off"></div>
+      <div class="field"><label for="novoGrpNomes">Pessoas (separe por vírgula)</label><input id="novoGrpNomes" placeholder="Ex.: João Silva, Maria Silva" autocomplete="off"></div>
+      <div class="acts"><button class="btn" id="addGrp" type="button" style="width:auto;padding:12px 28px;margin:0">Criar grupo</button></div>
+      <h2 style="margin-top:40px">Vínculos</h2>
+      <p class="hint">Ligue pessoas de grupos diferentes (amigos, acompanhantes). Quando uma for escolhida, a outra é oferecida.</p>
+      <div id="vincLista"></div>
+      <div class="field" style="margin-top:20px"><label for="novoVinc">Pessoas a vincular (separe por vírgula)</label><input id="novoVinc" placeholder="Ex.: Sueli Souza, Carlos Lima" autocomplete="off"></div>
+      <div class="acts"><button class="btn" id="addVinc" type="button" style="width:auto;padding:12px 28px;margin:0">Vincular</button></div>
+      <div class="ok" id="grpMsg"></div>
+    </div>
+
+    <div class="upl">
+      <h2>Lista de convidados</h2>
+      <p class="hint">Cole a lista ou envie um arquivo .txt/.csv. Um grupo por linha: <b>Família Silva: João, Maria, Pedro</b> — ou <b>Família;Nome</b> — ou só um nome por linha. Para ligar pessoas de grupos diferentes, use <b>Vínculo: Sueli Souza, Carlos Lima</b> — quando um deles for escolhido, o outro é oferecido para adicionar. É assim que o convidado encontra o próprio nome.</p>
+      <textarea id="listaTxt" placeholder="Família Silva: João Silva, Maria Silva&#10;Ana Souza&#10;Família Costa;Carlos Costa"></textarea>
+      <div class="acts">
+        <button class="btn" id="subir" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar lista</button>
+        <label class="link" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer">Enviar arquivo<input type="file" id="arq" accept=".txt,.csv,text/plain,text/csv" class="hide"></label>
+        <button class="link" id="limpar" type="button">Apagar lista</button>
+      </div>
+      <div class="ok" id="uplMsg"></div>
+    </div>
+  </section>
+  <section id="fotosSec" class="admin cfg hide">
+    <h2>Fotos da tela inicial</h2>
+    <p class="hint">Escolha as fotos e como elas aparecem na tela inicial do convite. Com mais de uma, elas alternam sozinhas. Nada vai ao ar até você tocar em Salvar fotos.</p>
+    <div class="cfg-grp">
+      <h3>Modelo da tela inicial</h3>
+      <div class="field"><div class="modelos" id="modoSeg"></div></div>
+    </div>
+    <div class="cfg-grp">
+      <h3>Fotos (até 5)</h3>
+      <div class="field">
+        <div id="fotosLista"></div>
+        <label class="link" id="fotoAdd" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer">+ Adicionar fotos<input type="file" id="fotoArq" accept="image/*" multiple class="hide"></label>
+        <p class="hint" style="margin:10px 0 0">As imagens são reduzidas automaticamente. Use fotos na horizontal para um resultado melhor no computador.</p>
+      </div>
+      <div class="field" id="veuField"><label for="veu">Véu claro sobre a foto de fundo (para o texto ficar legível)</label><input id="veu" type="range" min="10" max="95" value="75"></div>
+    </div>
+    <div class="cfg-save">
+      <button class="btn" id="salvarFotos" type="button" style="width:auto;padding:12px 28px;margin:0">Salvar fotos</button>
+      <button class="link" id="verConvite" type="button">Ver como ficou no convite</button>
+      <div class="ok" id="fotosMsg"></div>
+    </div>
+  </section>
+  <footer class="foot" id="foot"><button class="link" id="abrirLogin" type="button">Acesso dos noivos</button></footer>
 </main>
+
 <script>
-document.querySelectorAll('.seg').forEach(function(g){g.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)})})});
-var alvo=new Date(2026,11,11,16,30,0);
-function p(n){return String(n).padStart(2,'0')}
-function tick(){var t=Math.max(0,alvo-new Date()),s=Math.floor(t/1000);
-document.getElementById('d').textContent=Math.floor(s/86400);
-document.getElementById('h').textContent=p(Math.floor(s%86400/3600));
-document.getElementById('m').textContent=p(Math.floor(s%3600/60));
-document.getElementById('s').textContent=p(s%60)}
-tick();setInterval(tick,1000);
+
+// ---- Supabase (Project Settings > API) ----
+const SUPABASE_URL = "https://dcckwtxpbueiulanlgay.supabase.co";
+const ADMIN_EMAIL = "noivos@convite.app"; // usuário interno criado pelo supabase-admin.sql (não precisa ser e-mail real)
+const SUPABASE_KEY = "sb_publishable_qau8NOrCpK88FdOu095suQ_8LH_OP04";
+const sb = (window.supabase && SUPABASE_URL.startsWith("http")) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+if (!sb) console.warn("Supabase não configurado: preencha SUPABASE_URL e SUPABASE_KEY.");
+// ---- Edite aqui (valores padrão; os noivos editam pelo painel) ----
+const C = {
+  noivos: "Nome & Nome",
+  data: "00 de mês de 2026",
+  hora: "00h00",
+  local: "Local da cerimônia",
+  cidade: "Cidade, UF",
+  mapa: "https://maps.app.goo.gl/QECs1TYgHhq267C58",  // link do Google Maps do local
+  prazo: "",            // ex.: "até 01 de novembro"
+  whatsapp: ""          // opcional, só números com DDI: 5574999999999
+};
+// --------------------
+const $ = id => document.getElementById(id);
+let pessoas = [{nome:"", vai:true}];
+let enviado = null, convidados = [], vinculos = [], liberado = false;
+function atualizaForm(){ $("restoForm").classList.toggle("hide", convidados.length > 0 && !liberado); }
+function setTab(t){ const adm = t === "admin", fot = t === "fotos", fora = adm || fot;
+  $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
+  $("heroSec").classList.toggle("hide", fora); $("adminSec").classList.toggle("hide", !adm); $("fotosSec").classList.toggle("hide", !fot);
+  $("formSec").classList.toggle("hide", fora || !!enviado); $("doneSec").classList.toggle("hide", fora || !enviado); $("loginSec").classList.add("hide"); }
+
+function desenhaHero(){
+  { const h = $("noivos"), pr = String(C.noivos || "").trim().split(/\s+(?:&|e|\+)\s+/i); h.textContent = "";
+    if (pr.length === 2){ const x = document.createElement("span"), m = document.createElement("em"), y = document.createElement("span"); x.textContent = pr[0]; m.textContent = "&"; y.textContent = pr[1]; h.append(x, m, y); } else h.textContent = C.noivos || ""; }
+  $("meta").innerHTML = "";
+  [[C.data, C.hora].filter(Boolean).join(" · "), C.local, C.cidade].filter(Boolean).forEach(t => { const d = document.createElement("div"); d.textContent = t; $("meta").appendChild(d); });
+  const mp = $("mapaLink"), u = String(C.mapa || "").trim();
+  if (/^https?:\/\//i.test(u)){ mp.href = u; mp.classList.remove("hide"); } else mp.classList.add("hide");
+  $("prazo").textContent = C.prazo ? "Por favor, confirme " + C.prazo + ". Adicione cada pessoa da família e marque quem vai." : "Adicione cada pessoa da sua família e marque quem vai.";
+}
+desenhaHero();
+
+// ---- Contador regressivo (lê a data e o horário digitados nos dados do convite) ----
+const MESES_PT = ["janeiro","fevereiro","marco","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+function dataEvento(){
+  const sem = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const t = sem(C.data); let d, m, a;
+  let r = t.match(/(\d{1,2})\s*(?:de\s*)?([a-z]+)\s*(?:de\s*)?(\d{4})/);
+  if (r){ d = +r[1]; m = MESES_PT.indexOf(r[2]); a = +r[3]; }
+  else if ((r = t.match(/(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/))){ d = +r[1]; m = +r[2] - 1; a = +r[3]; }
+  if (!r || m < 0 || m > 11 || d < 1 || d > 31) return null;
+  const h = sem(C.hora).match(/(\d{1,2})\s*(?:h|:)\s*(\d{2})?/);
+  return { dia: new Date(a, m, d), quando: new Date(a, m, d, h ? +h[1] : 0, h && h[2] ? +h[2] : 0) };
+}
+function atualizaContador(){
+  const box = $("count"), ev = dataEvento();
+  if (!ev){ box.classList.add("hide"); return; }
+  const agora = new Date(), hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+  let ms = ev.quando - agora;
+  if (hoje.getTime() > ev.dia.getTime()){ box.classList.add("hide"); return; }
+  box.classList.remove("hide");
+  if (hoje.getTime() === ev.dia.getTime() && ms <= 0){ box.innerHTML = '<div class="hoje">É hoje!</div>'; return; }
+  ms = Math.max(0, ms);
+  const dias = Math.floor(ms / 864e5), hrs = Math.floor(ms % 864e5 / 36e5), min = Math.floor(ms % 36e5 / 6e4), seg = Math.floor(ms % 6e4 / 1e3);
+  box.innerHTML = [[dias,"Dias"],[hrs,"Horas"],[min,"Min"],[seg,"Seg"]].map(([n,t]) => "<div><b>" + String(n).padStart(2,"0") + "</b><span>" + t + "</span></div>").join("");
+}
+atualizaContador(); setInterval(atualizaContador, 1000);
+const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["mapa","cfgMapa"],["prazo","cfgPrazo"],["whatsapp","cfgZap"]];
+function aplicarCfg(c){
+  CFG.forEach(([k,id]) => { if (typeof c[k] === "string") C[k] = c[k]; });
+  desenhaHero();
+  CFG.forEach(([k,id]) => { const el = $(id); if (el && document.activeElement !== el) el.value = C[k] || ""; });
+  if (Array.isArray(c.fotos)) FOTOS = c.fotos.filter(f => typeof f === "string" && f.startsWith("data:image/"));
+  if (typeof c.veu === "number") VEU = c.veu;
+  if (MODELOS.some(m => m[0] === c.fotosModo)) MODO = c.fotosModo;
+  $("veu").value = VEU; desenhaModo(); desenhaFundo(); desenhaFotosAdmin();
+}
+
+// ---- Fotos de fundo ----
+const MAX_FOTOS = 5;
+let FOTOS = [], VEU = 75, MODO = "destaque", bgTimer = null;
+const MODELOS = [
+  ["destaque","Hexágono",'<div class="mp" style="width:70%;height:42px;border-radius:6px"></div><i class="mn" style="width:48%"></i><i style="width:32%"></i>'],
+  ["cheia","Tela cheia",'<div class="mp full"></div><div class="sc" style="background:rgba(20,30,52,.45)"></div><i class="mn w" style="width:56%"></i><i class="w" style="width:36%"></i>'],
+  ["metade","Metade e metade",'__ROW__'],
+  ["arco","Arco",'<div class="mp" style="width:34px;height:50px;border-radius:17px 17px 3px 3px"></div><i class="mn" style="width:48%"></i><i style="width:32%"></i>'],
+  ["tira","Tira de fotos",'<i class="mn" style="width:48%"></i><i style="width:32%"></i><div style="display:flex;gap:4px;margin-top:3px"><div class="mp" style="width:24px;height:32px;border-radius:4px"></div><div class="mp" style="width:24px;height:32px;border-radius:4px"></div><div class="mp" style="width:24px;height:32px;border-radius:4px"></div></div>'],
+  ["fundo","Fundo suave",'<div class="mp full"></div><div class="sc" style="background:rgba(255,255,255,.62)"></div><i class="mn" style="width:48%"></i><i style="width:32%"></i>']
+];
+function desenhaFundo(){
+  clearInterval(bgTimer);
+  document.body.dataset.modelo = FOTOS.length ? MODO : "";
+  const alvos = { fundo: $("bg"), cheia: $("heroFotos"), tira: $("tira") }, alvo = alvos[MODO] || $("capa");
+  [$("bg"), $("heroFotos"), $("tira"), $("capa")].forEach(e => { e.innerHTML = ""; e.classList.add("hide"); });
+  if (!FOTOS.length) return;
+  alvo.classList.remove("hide");
+  $("bg").style.setProperty("--veu", VEU / 100);
+  const anima = MODO !== "tira";
+  FOTOS.forEach((src, i) => { const d = document.createElement("div"); d.style.backgroundImage = 'url("' + src + '")'; if (anima && !i) d.className = "on"; alvo.appendChild(d); });
+  if (anima && FOTOS.length > 1){ let k = 0; const ds = alvo.children; bgTimer = setInterval(() => { ds[k].classList.remove("on"); k = (k + 1) % ds.length; ds[k].classList.add("on"); }, 6000); }
+}
+function desenhaModo(){
+  const box = $("modoSeg"); box.innerHTML = "";
+  box.style.setProperty("--f0", FOTOS[0] ? 'url("' + FOTOS[0] + '")' : "none");
+  MODELOS.forEach(([k, t, h]) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "mod" + (MODO === k ? " on" : "");
+    const m = document.createElement("div"); m.className = "mm";
+    if (h === "__ROW__"){ m.classList.add("row"); m.innerHTML = '<div class="mp" style="width:50%;height:100%"></div><div style="width:50%;display:flex;flex-direction:column;align-items:center;gap:5px"><i class="mn" style="width:70%"></i><i style="width:50%"></i></div>'; }
+    else m.innerHTML = h;
+    const sp = document.createElement("span"); sp.textContent = t; b.append(m, sp);
+    b.onclick = () => { MODO = k; desenhaModo(); desenhaFundo(); $("fotosMsg").textContent = "Toque em Salvar fotos para publicar."; };
+    box.appendChild(b);
+  });
+  $("veuField").classList.toggle("hide", MODO !== "fundo");
+}
+function desenhaFotosAdmin(){
+  desenhaModo();
+  const box = $("fotosLista"); box.innerHTML = "";
+  FOTOS.forEach((src, i) => {
+    const w = document.createElement("div"); w.className = "thumb";
+    const im = document.createElement("img"); im.src = src; im.alt = "";
+    const x = document.createElement("button"); x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remover foto");
+    x.onclick = () => { FOTOS.splice(i, 1); desenhaFundo(); desenhaFotosAdmin(); $("fotosMsg").textContent = "Toque em Salvar fotos para publicar a mudança."; };
+    w.append(im, x); box.appendChild(w);
+  });
+  $("fotoAdd").classList.toggle("hide", FOTOS.length >= MAX_FOTOS);
+}
+function reduzFoto(file){
+  return new Promise((ok, fail) => {
+    const url = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      const s = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement("canvas");
+      c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); ok(c.toDataURL("image/jpeg", 0.72));
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); fail(); };
+    im.src = url;
+  });
+}
+$("fotoArq").onchange = async e => {
+  const arqs = [...e.target.files]; e.target.value = ""; let falhou = false;
+  for (const f of arqs){ if (FOTOS.length >= MAX_FOTOS) break; try { FOTOS.push(await reduzFoto(f)); } catch(_) { falhou = true; } }
+  desenhaFundo(); desenhaFotosAdmin();
+  $("fotosMsg").textContent = falhou ? "Alguma foto não pôde ser lida (use JPG ou PNG). As demais foram adicionadas — toque em Salvar fotos." : "Toque em Salvar fotos para publicar.";
+};
+$("verConvite").onclick = () => setTab("convite");
+desenhaModo();
+$("veu").oninput = e => { VEU = +e.target.value; $("bg").style.setProperty("--veu", VEU / 100); };
+CFG.forEach(([k,id]) => { const el = $(id); if (el) el.value = C[k] || ""; });
+
+function slug(s){ return s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"") || "familia"; }
+
+function render(){
+  const box = $("pessoas"); box.innerHTML = "";
+  pessoas.forEach((p,i) => {
+    const r = document.createElement("div"); r.className = "row";
+    const nm = document.createElement("div"); nm.className = "nm";
+    const l = document.createElement("label"); l.textContent = "Nome completo";
+    const inp = document.createElement("input"); inp.value = p.nome; inp.autocomplete = "off";
+    if (convidados.length) inp.placeholder = "Digite para buscar na lista";
+    const sug = document.createElement("div"); sug.className = "res sug";
+    inp.oninput = () => { p.nome = inp.value; sugerir(p, sug); };
+    nm.append(l, inp, sug);
+    const seg = document.createElement("div"); seg.className = "seg";
+    [["Vai",true],["Não vai",false]].forEach(([t,v]) => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = t;
+      if (p.vai === v) b.className = "on";
+      b.onclick = () => { p.vai = v; render(); };
+      seg.appendChild(b);
+    });
+    r.append(nm, seg);
+    if (pessoas.length > 1){ const x = document.createElement("button"); x.className = "rm"; x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label","Remover"); x.onclick = () => { pessoas.splice(i,1); render(); }; r.appendChild(x); }
+    box.appendChild(r);
+  });
+}
+render(); atualizaForm();
+
+function mostrarObrigado(d){
+  const vao = d.pessoas.filter(p => p.vai).length;
+  $("doneTxt").textContent = vao ? "Sua presença está confirmada (" + vao + (vao === 1 ? " pessoa" : " pessoas") + "). Esperamos você!" : "Recebemos sua resposta. Sentiremos sua falta!";
+  $("formSec").classList.add("hide"); $("doneSec").classList.remove("hide");
+}
+$("editar").onclick = () => { enviado = null; $("doneSec").classList.add("hide"); $("formSec").classList.remove("hide"); };
+
+function whatsapp(d){
+  const linhas = d.pessoas.map(p => "• " + p.nome + ": " + (p.vai ? "vai" : "não vai"));
+  const txt = "Confirmação de presença — " + d.familia + "\n" + linhas.join("\n") + (d.mensagem ? "\n\n" + d.mensagem : "");
+  window.open("https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(txt), "_blank");
+}
+
+$("enviar").onclick = async () => {
+  const lista = pessoas.map(p => ({nome:p.nome.trim(), vai:p.vai})).filter(p => p.nome);
+  const familia = $("fam").value.trim() || (lista[0] ? lista[0].nome : "");
+  $("err").textContent = "";
+  if (!familia) return $("err").textContent = "Informe seu nome.";
+  if (!lista.length) return $("err").textContent = "Adicione pelo menos uma pessoa.";
+  const d = {familia, pessoas:lista, mensagem:$("msg").value.trim(), criado:Date.now()};
+  $("enviar").disabled = true;
+  try {
+    if (sb) {
+      const { error } = await sb.rpc("enviar_rsvp", { p_id: slug(familia), p_familia: familia, p_pessoas: lista, p_mensagem: d.mensagem });
+      if (error) throw error;
+    } else { whatsapp(d); }
+    enviado = d; mostrarObrigado(d);
+  } catch(e) {
+    $("err").textContent = "Não foi possível salvar agora. Tente novamente em instantes.";
+  }
+  $("enviar").disabled = false;
+};
+
+// ---- Lista de convidados e busca ----
+const norm = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+function parseLista(txt){
+  const map = new Map();
+  const add = (fam, nomes) => {
+    fam = fam.trim(); nomes = nomes.map(n => n.trim()).filter(Boolean);
+    if (!fam || !nomes.length) return;
+    const k = slug(fam); const g = map.get(k) || {familia:fam, pessoas:[]};
+    nomes.forEach(n => { if (!g.pessoas.includes(n)) g.pessoas.push(n); });
+    map.set(k, g);
+  };
+  txt.split(/\r?\n/).forEach(raw => {
+    const l = raw.replace(/["“”]/g,"").trim(); if (!l) return;
+    if (/^v[ií]nculos?\s*:/i.test(l)) return;
+    if (!l.includes(":") && /^fam[ií]lia\s*[;,\t]\s*nome/i.test(l)) return;
+    if (l.includes(":")) { const i = l.indexOf(":"); add(l.slice(0,i), l.slice(i+1).split(/[,;]/)); return; }
+    const p = l.split(/[;\t,]/);
+    if (p.length >= 2) add(p[0], p.slice(1)); else add(l, [l]);
+  });
+  return [...map.values()];
+}
+const curto = n => { const w = String(n).trim().split(/\s+/); return w.length > 1 ? w[0] + " " + w[w.length-1][0].toUpperCase() + "." : w[0]; };
+let ehDono = false;
+const msgGrp = t => { const e = $('grpMsg'); if (e) e.textContent = t; };
+const idVinc = n => slug(n.join(' ')).slice(0,120);
+async function salvaGrupo(g, pessoas){
+  const id = slug(g.familia);
+  const r = pessoas.length ? await sb.from('convidados').upsert({id, familia:g.familia, pessoas}) : await sb.from('convidados').delete().eq('id', id);
+  if (r.error) { msgGrp('Não foi possível salvar. Tente de novo.'); return false; }
+  await carregaListas(); return true;
+}
+async function renomeiaGrupo(g, novo){
+  novo = novo.trim();
+  if (!novo) return 'Dê um nome ao grupo.';
+  if (novo === g.familia) return null;
+  const idN = slug(novo), idA = slug(g.familia);
+  if (idN !== idA && convidados.some(x => slug(x.familia) === idN)) return 'Já existe um grupo com esse nome.';
+  const r = await sb.from('convidados').upsert({id:idN, familia:novo, pessoas:g.pessoas});
+  if (r.error) return 'Não foi possível salvar. Tente de novo.';
+  if (idN !== idA) { const d = await sb.from('convidados').delete().eq('id', idA); if (d.error) return 'Não foi possível salvar. Tente de novo.'; }
+  msgGrp('Nome do grupo atualizado.');
+  await carregaListas(); return null;
+}
+function renderGrupos(){
+  if (!ehDono) return;
+  const L = $('grpLista'); L.innerHTML = '';
+  if (!convidados.length){ const p = document.createElement('p'); p.className = 'sub'; p.textContent = 'Nenhum grupo ainda.'; L.appendChild(p); }
+  [...convidados].sort((a,b) => a.familia.localeCompare(b.familia)).forEach(g => {
+    const d = document.createElement('div'); d.className = 'grp';
+    const top = document.createElement('div'); top.className = 'grp-top';
+    const h = document.createElement('h3'); h.textContent = g.familia;
+    const cnt = document.createElement('span'); cnt.className = 'grp-n'; cnt.textContent = g.pessoas.length + (g.pessoas.length === 1 ? ' pessoa' : ' pessoas');
+    const ttl = document.createElement('div'); ttl.append(h, cnt); top.appendChild(ttl); d.appendChild(top);
+    const chips = document.createElement('div'); chips.className = 'grp-chips';
+    g.pessoas.forEach((n,i) => { const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = n + ' ×'; c.setAttribute('aria-label','Remover ' + n); c.onclick = () => salvaGrupo(g, g.pessoas.filter((_,j) => j !== i)); chips.appendChild(c); });
+    d.appendChild(chips);
+    const row = document.createElement('div'); row.className = 'grp-add';
+    const inp = document.createElement('input'); inp.placeholder = 'Adicionar pessoa'; inp.autocomplete = 'off';
+    const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'grp-btn'; ok.textContent = 'Adicionar';
+    const add = () => { const n = inp.value.split(/[,;]/).map(x => x.trim()).filter(Boolean).filter(x => !g.pessoas.some(y => norm(y) === norm(x))); if (n.length) salvaGrupo(g, [...g.pessoas, ...n]); };
+    inp.onkeydown = e => { if (e.key === 'Enter') add(); }; ok.onclick = add;
+    row.append(inp, ok); d.appendChild(row);
+    const acts = document.createElement('div'); acts.className = 'grp-acts';
+    const ed = document.createElement('button'); ed.className = 'link'; ed.type = 'button'; ed.textContent = 'Editar nome';
+    ed.onclick = () => {
+      const inp = document.createElement('input'); inp.value = g.familia; inp.autocomplete = 'off'; inp.setAttribute('aria-label','Novo nome do grupo');
+      const sv = document.createElement('button'); sv.type = 'button'; sv.className = 'grp-btn'; sv.textContent = 'Salvar';
+      const cc = document.createElement('button'); cc.type = 'button'; cc.className = 'link'; cc.textContent = 'Cancelar';
+      const bar = document.createElement('div'); bar.className = 'grp-edit'; bar.append(sv, cc);
+      const er = document.createElement('div'); er.className = 'grp-err';
+      ttl.replaceChildren(inp, bar, er); acts.style.display = 'none'; inp.focus(); inp.select();
+      const salvar = async () => { sv.disabled = true; er.textContent = ''; const m = await renomeiaGrupo(g, inp.value); if (m) { er.textContent = m; sv.disabled = false; } else renderGrupos(); };
+      sv.onclick = salvar; cc.onclick = renderGrupos;
+      inp.onkeydown = e => { if (e.key === 'Enter') salvar(); else if (e.key === 'Escape') renderGrupos(); };
+    };
+    let arm = false; const x = document.createElement('button'); x.className = 'link'; x.type = 'button'; x.textContent = 'Remover';
+    x.onclick = () => { if (!arm){ arm = true; x.textContent = 'Toque de novo para remover'; return; } salvaGrupo(g, []); };
+    acts.append(ed, x); top.appendChild(acts);
+    L.appendChild(d);
+  });
+  const V = $('vincLista'); V.innerHTML = '';
+  if (!vinculos.length){ const p = document.createElement('p'); p.className = 'sub'; p.textContent = 'Nenhum vínculo ainda.'; V.appendChild(p); }
+  vinculos.forEach(v => {
+    const d = document.createElement('div'); d.className = 'fam';
+    const h = document.createElement('h3'); h.textContent = v.nomes.join(' · '); d.appendChild(h);
+    let arm = false; const x = document.createElement('button'); x.className = 'link'; x.type = 'button'; x.textContent = 'Remover vínculo'; x.style.marginTop = '6px';
+    x.onclick = async () => { if (!arm){ arm = true; x.textContent = 'Toque de novo para remover'; return; } await sb.from('vinculos').delete().eq('id', idVinc(v.nomes)); await carregaListas(); };
+    d.appendChild(x); V.appendChild(d);
+  });
+}
+function parseVinculos(txt){
+  const out = [];
+  txt.split(/\r?\n/).forEach(raw => { const l = raw.replace(/["“”]/g,"").trim(); const m = l.match(/^v[ií]nculos?\s*:(.*)$/i); if (!m) return; const nomes = m[1].split(/[,;]/).map(n => n.trim()).filter(Boolean); if (nomes.length >= 2) out.push(nomes); });
+  return out;
+}
+function todosNomes(){
+  const m = new Map();
+  convidados.forEach(g => g.pessoas.forEach(n => { const k = norm(n); if (!m.has(k)) m.set(k, {nome:n, grupo:g.familia}); }));
+  vinculos.forEach(v => v.nomes.forEach(n => { const k = norm(n); if (!m.has(k)) m.set(k, {nome:n, grupo:""}); }));
+  return [...m.values()];
+}
+function sugerir(p, box){
+  box.innerHTML = "";
+  const toks = norm(p.nome).split(/\s+/).filter(t => t.length >= 2);
+  if (!toks.length) return;
+  const ja = new Set(pessoas.filter(x => x !== p).map(x => norm(x.nome)));
+  const ach = todosNomes().filter(x => !ja.has(norm(x.nome)) && toks.every(t => norm(x.nome).split(/[^a-z0-9]+/).some(w => w.startsWith(t)))).slice(0, 6);
+  ach.forEach(x => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = curto(x.nome);
+    if (x.grupo && norm(x.grupo) !== norm(x.nome)) { const s = document.createElement("small"); s.textContent = x.grupo; b.appendChild(s); }
+    b.onclick = () => { p.nome = x.nome; render(); };
+    box.appendChild(b);
+  });
+}
+function buscar(){
+  const q = norm($("busca2").value), box = $("res"); box.innerHTML = "";
+  if (q.length < 2) return;
+  const toks = q.split(/\s+/).filter(t => t.length >= 2);
+  const pontos = g => { const ws = norm(g.familia + " " + g.pessoas.join(" ")).split(/[^a-z0-9]+/).filter(Boolean); return toks.reduce((n, t) => n + (ws.some(w => w.startsWith(t) || (w.length >= 3 && t.startsWith(w))) ? 1 : 0), 0); };
+  const achou = convidados.map(g => ({g, p: pontos(g)})).filter(x => x.p > 0).sort((a, b) => b.p - a.p).slice(0, 8).map(x => x.g);
+  if (!achou.length) { const d = document.createElement("div"); d.className = "none"; d.textContent = "Não encontramos seu nome. "; const m = document.createElement("button"); m.type = "button"; m.className = "link"; m.textContent = "Preencher manualmente"; m.onclick = () => { liberado = true; atualizaForm(); box.innerHTML = ""; const ins = $("pessoas").querySelectorAll("input"); if (ins[0]) ins[0].focus(); }; d.appendChild(m); box.appendChild(d); return; }
+  achou.forEach(g => {
+    const b = document.createElement("button"); b.type = "button";
+    const solo = g.pessoas.length === 1 && norm(g.pessoas[0]) === norm(g.familia);
+    b.textContent = solo ? curto(g.familia) : g.familia;
+    if (!solo) { const s = document.createElement("small"); s.textContent = g.pessoas.map(curto).join(", "); b.appendChild(s); }
+    b.onclick = () => { $("fam").value = g.familia; pessoas = g.pessoas.map(n => ({nome:n, vai:true})); liberado = true; atualizaForm(); render(); $("busca2").value = ""; box.innerHTML = ""; $("fam").scrollIntoView({behavior:"smooth", block:"center"}); };
+    box.appendChild(b);
+  });
+}
+$("busca2").oninput = buscar;
+
+// ---- Painel dos noivos ----
+let todas = [], filtro = "todos", busca = "";
+function passa(f, v, n){ const q = busca.trim().toLowerCase(); if (q && !(f.familia + " " + f.pessoas.map(p => p.nome).join(" ")).toLowerCase().includes(q)) return false; if (filtro === "vai") return v.length > 0; if (filtro === "nao") return n.length > 0; return true; }
+function renderAdmin(){
+  let vai = 0, nao = 0;
+  const L = $("lista"); L.innerHTML = "";
+  todas.sort((a,b) => (b.criado||0) - (a.criado||0)).forEach(f => {
+    const v = f.pessoas.filter(p => p.vai).map(p => p.nome), n = f.pessoas.filter(p => !p.vai).map(p => p.nome);
+    vai += v.length; nao += n.length;
+    if (!passa(f, v, n)) return;
+    const d = document.createElement("div"); d.className = "fam";
+    const h = document.createElement("h3"); h.textContent = f.familia; d.appendChild(h);
+    if (v.length){ const p = document.createElement("p"); p.textContent = "Vão: " + v.join(", "); d.appendChild(p); }
+    if (n.length){ const p = document.createElement("p"); p.textContent = "Não vão: " + n.join(", "); d.appendChild(p); }
+    if (f.mensagem){ const p = document.createElement("p"); p.className = "msg"; p.textContent = "“" + f.mensagem + "”"; d.appendChild(p); }
+    let arm = false; const x = document.createElement("button"); x.className = "link"; x.type = "button"; x.textContent = "Remover"; x.style.marginTop = "6px";
+    x.onclick = async () => { if (!arm){ arm = true; x.textContent = "Toque de novo para remover"; return; } await sb.from("rsvps").delete().eq("id", f.id); await carregaRsvps(); };
+    d.appendChild(x);
+    L.appendChild(d);
+  });
+  if (!L.children.length){ const p = document.createElement("p"); p.className = "sub"; p.textContent = todas.length ? "Nenhum resultado." : "Nenhuma confirmação ainda."; L.appendChild(p); }
+  $("sVai").textContent = vai; $("sNao").textContent = nao; $("sFam").textContent = todas.length;
+}
+
+// ---- Carga de dados (Supabase) ----
+async function carregaCfg(){
+  const { data } = await sb.from("config").select("dados").eq("id","convite").maybeSingle();
+  if (data && data.dados) aplicarCfg(data.dados);
+}
+async function carregaListas(){
+  if (!sb) return;
+  const [g, v] = await Promise.all([sb.from("convidados").select("familia,pessoas"), sb.from("vinculos").select("nomes")]);
+  if (!g.error) convidados = g.data;
+  if (!v.error) vinculos = v.data;
+  renderGrupos();
+  $("findBox").classList.toggle("hide", !convidados.length); atualizaForm(); buscar();
+  if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render();
+  $("uplMsg").textContent = ehDono && convidados.length ? convidados.length + " grupo(s) na lista." : "";
+}
+async function carregaRsvps(){
+  const { data, error } = await sb.from("rsvps").select("id,familia,pessoas,mensagem,criado");
+  if (!error) { todas = data; renderAdmin(); }
+}
+async function souAdmin(){ const { data } = await sb.rpc("is_admin"); return data === true; }
+
+// ---- Login dos noivos ----
+$("abrirLogin").onclick = () => {
+  if (!sb) return alert("Supabase ainda não foi configurado no arquivo.");
+  $("formSec").classList.add("hide"); $("doneSec").classList.add("hide"); $("loginSec").classList.remove("hide"); $("lgSenha").focus();
+};
+$("voltar").onclick = () => setTab("convite");
+$("lgSenha").onkeydown = e => { if (e.key === "Enter") $("entrar").click(); };
+$("entrar").onclick = async () => {
+  const email = ADMIN_EMAIL, password = $("lgSenha").value.trim();
+  $("lgErr").textContent = "";
+  if (!password) return $("lgErr").textContent = "Digite o código.";
+  $("entrar").disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) $("lgErr").textContent = "Código incorreto.";
+  else if (!(await souAdmin())) { await sb.auth.signOut(); $("lgErr").textContent = "Este código não dá acesso ao painel."; }
+  else { await ativaAdmin(); setTab("admin"); }
+  $("entrar").disabled = false;
+};
+
+// ---- Painel (liga uma vez, depois do login) ----
+let adminAtivo = false;
+async function ativaAdmin(){
+  if (adminAtivo) return; adminAtivo = true; ehDono = true;
+  $("foot").classList.add("hide");
+  renderGrupos();
+  $('addGrp').onclick = async () => {
+    const nome = $('novoGrp').value.trim(), nomes = $('novoGrpNomes').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
+    if (!nome) return msgGrp('Dê um nome ao grupo.');
+    if (!nomes.length) return msgGrp('Adicione pelo menos uma pessoa.');
+    const ex = convidados.find(x => slug(x.familia) === slug(nome));
+    const todos = [...(ex ? ex.pessoas : [])]; nomes.forEach(n => { if (!todos.some(y => norm(y) === norm(n))) todos.push(n); });
+    $('addGrp').disabled = true;
+    if (await salvaGrupo({familia: ex ? ex.familia : nome}, todos)) { $('novoGrp').value = ''; $('novoGrpNomes').value = ''; msgGrp('Grupo salvo.'); }
+    $('addGrp').disabled = false;
+  };
+  $('addVinc').onclick = async () => {
+    const nomes = $('novoVinc').value.split(/[,;]/).map(x => x.trim()).filter(Boolean);
+    if (nomes.length < 2) return msgGrp('Informe pelo menos duas pessoas.');
+    const r = await sb.from('vinculos').upsert({id: idVinc(nomes), nomes});
+    if (r.error) return msgGrp('Não foi possível salvar. Tente de novo.');
+    $('novoVinc').value = ''; msgGrp('Vínculo salvo.'); await carregaListas();
+  };
+  const msgU = t => $("uplMsg").textContent = t;
+  $("arq").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $("listaTxt").value = String(r.result).replace(/^\ufeff/, ""); msgU("Arquivo carregado. Confira e toque em Salvar lista."); }; r.readAsText(f); e.target.value = ""; };
+  $("subir").onclick = async () => {
+    const g = parseLista($("listaTxt").value), v = parseVinculos($("listaTxt").value);
+    if (!g.length && !v.length) return msgU("Nenhum nome encontrado.");
+    $("subir").disabled = true; msgU("Salvando…");
+    const r1 = g.length ? await sb.from("convidados").upsert(g.map(x => ({id: slug(x.familia), familia: x.familia, pessoas: x.pessoas}))) : {};
+    const r2 = v.length ? await sb.from("vinculos").upsert(v.map(n => ({id: idVinc(n), nomes: n}))) : {};
+    if (r1.error || r2.error) msgU("Não foi possível salvar. Tente de novo.");
+    else { $("listaTxt").value = ""; await carregaListas(); msgU(g.length + " grupo(s) e " + v.length + " vínculo(s) salvo(s)."); }
+    $("subir").disabled = false;
+  };
+  async function salvaConfig(btn, msg, ok){
+    const cfg = {}; CFG.forEach(([k,id]) => cfg[k] = $(id).value.trim());
+    if (cfg.whatsapp) cfg.whatsapp = cfg.whatsapp.replace(/\D/g, "");
+    cfg.fotos = FOTOS; cfg.veu = VEU; cfg.fotosModo = MODO;
+    btn.disabled = true; msg.textContent = "Salvando…";
+    const { error } = await sb.from("config").upsert({ id: "convite", dados: cfg });
+    if (error) { console.error(error); msg.textContent = "Não foi possível salvar. Tente de novo (se tiver muitas fotos, remova algumas)."; }
+    else { aplicarCfg(cfg); msg.textContent = ok; }
+    btn.disabled = false;
+  }
+  $("salvarCfg").onclick = () => salvaConfig($("salvarCfg"), $("cfgMsg"), "Dados salvos. O convite já mostra as novas informações.");
+  $("salvarFotos").onclick = () => salvaConfig($("salvarFotos"), $("fotosMsg"), "Fotos salvas. Já aparecem na tela inicial do convite.");
+  let armL = false;
+  $("limpar").onclick = async () => {
+    if (!convidados.length && !vinculos.length) return;
+    if (!armL) { armL = true; $("limpar").textContent = "Toque de novo para apagar tudo"; setTimeout(() => { armL = false; $("limpar").textContent = "Apagar lista"; }, 4000); return; }
+    armL = false; $("limpar").textContent = "Apagar lista";
+    const [a, b] = await Promise.all([sb.from("convidados").delete().neq("id",""), sb.from("vinculos").delete().neq("id","")]);
+    if (a.error || b.error) msgU("Não foi possível apagar."); else { await carregaListas(); msgU("Lista apagada."); }
+  };
+  $("tabs").classList.remove("hide");
+  $("tabs").querySelectorAll("button").forEach(b => b.onclick = async () => {
+    if (b.dataset.t === "sair") { await sb.auth.signOut(); location.reload(); return; }
+    setTab(b.dataset.t);
+  });
+  $("busca").oninput = e => { busca = e.target.value; renderAdmin(); };
+  const fl = $("filtro");
+  const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
+  desenhaFiltro();
+  $("csv").onclick = () => {
+    const q = v => '"' + String(v).replace(/"/g,'""') + '"';
+    const rows = [["Família","Nome","Presença","Recado"].map(q).join(",")];
+    todas.forEach(f => f.pessoas.forEach(p => rows.push([f.familia, p.nome, p.vai ? "Vai" : "Não vai", f.mensagem||""].map(q).join(","))));
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["\ufeff" + rows.join("\n")], {type:"text/csv;charset=utf-8"}));
+    a.download = "confirmacoes.csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  await carregaRsvps();
+  sb.channel("rsvps-live").on("postgres_changes", {event:"*", schema:"public", table:"rsvps"}, carregaRsvps).subscribe();
+}
+
+// ---- Início ----
+(async () => {
+  if (!sb) return;
+  try {
+    await Promise.all([carregaCfg(), carregaListas()]);
+    const { data: { session } } = await sb.auth.getSession();
+    if (session && await souAdmin()) await ativaAdmin();
+  } catch(e) { console.error(e); }
+})();
 </script>
 </body>
 </html>
