@@ -250,6 +250,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
     <button class="btn" id="enviar" type="button">Enviar confirmação</button>
     <div class="err" id="err"></div>
     </div>
+    <div style="text-align:center;margin-top:8px"><a class="mapa zapBtn" href="#" target="_blank" rel="noopener">Falar com os noivos</a></div>
   </section>
 
   <section id="doneSec" class="done hide">
@@ -257,6 +258,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
     <p class="sub" id="doneTxt"></p>
     <p class="sub" id="doneObs"></p>
     <button class="link" id="editar" type="button">Alterar minha resposta</button>
+    <div><a class="mapa zapBtn" href="#" target="_blank" rel="noopener">Falar com os noivos</a></div>
   </section>
 
   <section id="loginSec" class="hide">
@@ -304,7 +306,8 @@ body[data-modelo=metade] .hex{inset:4% 0}
         <div class="cfg-grid">
           <div class="field"><label for="cfgPrazo">Prazo para confirmar (texto exibido, opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
           <div class="field"><label for="cfgFecha">Encerrar confirmações em (opcional)</label><input id="cfgFecha" type="date"><p class="sub" style="margin:6px 0 0;font-size:12px">Depois do fim deste dia, ninguém mais consegue confirmar ou alterar a resposta. Deixe vazio para nunca encerrar.</p></div>
-          <div class="field"><label for="cfgZap">WhatsApp dos noivos (opcional, só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
+          <div class="field"><label for="cfgZap">WhatsApp dos noivos (só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
+          <div class="field span2"><label for="cfgZapMsg">Mensagem do botão "Falar com os noivos"</label><textarea id="cfgZapMsg" placeholder="Ex.: Olá! Estou falando sobre o convite de casamento."></textarea><p class="sub" style="margin:6px 0 0;font-size:12px">Esta é a mensagem que já vem escrita quando o convidado abre o WhatsApp. Deixe vazio para abrir a conversa em branco.</p></div>
         </div>
       </div>
 
@@ -384,12 +387,25 @@ const C = {
   mapa: "https://maps.app.goo.gl/QECs1TYgHhq267C58",  // link do Google Maps do local
   prazo: "",            // ex.: "até 01 de novembro"
   fecha: "",            // data limite real (AAAA-MM-DD); depois dela o site não aceita mais confirmações
-  whatsapp: ""          // opcional, só números com DDI: 5574999999999
+  whatsapp: "5574991108266",   // só números com DDI: 5574999999999
+  zapMsg: "Olá! Estou falando sobre o convite de casamento."   // mensagem que já vem escrita no WhatsApp
 };
+const ZAP_PADRAO = "5574991108266";
 // --------------------
 const $ = id => document.getElementById(id);
 let pessoas = [{nome:"", vai:true}];
 let enviado = null, convidados = [], vinculos = [], liberado = false;
+// Pessoas que já responderam "Não vai": ficam travadas (só os noivos liberam, removendo a resposta no painel)
+let travados = new Set();
+const ehTravado = p => travados.has(String(p.nome).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim());
+async function carregaTravados(familia){
+  travados = new Set();
+  if (!sb || !familia) return;
+  try {
+    const { data, error } = await sb.rpc("rsvp_travados", { p_id: slug(familia) });
+    if (!error && Array.isArray(data)) data.forEach(n => travados.add(String(n).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim()));
+  } catch(_) {}
+}
 // Encerra no fim do dia escolhido (horário do aparelho do convidado)
 function confirmacoesEncerradas(){
   const m = String(C.fecha || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -416,6 +432,8 @@ function desenhaHero(){
   [[C.data, C.hora].filter(Boolean).join(" · "), C.local, C.cidade].filter(Boolean).forEach(t => { const d = document.createElement("div"); d.textContent = t; $("meta").appendChild(d); });
   const mp = $("mapaLink"), u = String(C.mapa || "").trim();
   if (/^https?:\/\//i.test(u)){ mp.href = u; mp.classList.remove("hide"); } else mp.classList.add("hide");
+  const numZap = String(C.whatsapp || "").replace(/\D/g, "") || ZAP_PADRAO, txtZap = String(C.zapMsg || "").trim();
+  document.querySelectorAll(".zapBtn").forEach(a => a.href = "https://wa.me/" + numZap + (txtZap ? "?text=" + encodeURIComponent(txtZap) : ""));
   $("prazo").textContent = C.prazo ? "Por favor, confirme " + C.prazo + ". Adicione cada pessoa da família e marque quem vai." : "Adicione cada pessoa da sua família e marque quem vai.";
 }
 desenhaHero();
@@ -446,7 +464,7 @@ function atualizaContador(){
 }
 atualizaContador(); setInterval(atualizaContador, 1000);
 setInterval(atualizaForm, 60000);
-const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["mapa","cfgMapa"],["prazo","cfgPrazo"],["fecha","cfgFecha"],["whatsapp","cfgZap"]];
+const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["mapa","cfgMapa"],["prazo","cfgPrazo"],["fecha","cfgFecha"],["whatsapp","cfgZap"],["zapMsg","cfgZapMsg"]];
 function aplicarCfg(c){
   CFG.forEach(([k,id]) => { if (typeof c[k] === "string") C[k] = c[k]; });
   desenhaHero(); atualizaForm();
@@ -538,12 +556,20 @@ function render(){
     const r = document.createElement("div"); r.className = "row";
     const nm = document.createElement("div"); nm.className = "nm";
     const l = document.createElement("label"); l.textContent = "Nome completo";
+    const trava = ehTravado(p);
+    if (trava){ p.vai = false; p.talvez = false; }
     const inp = document.createElement("input"); inp.value = p.nome; inp.autocomplete = "off";
     if (convidados.length) inp.placeholder = "Digite para buscar na lista";
+    if (trava) inp.readOnly = true;
     const sug = document.createElement("div"); sug.className = "res sug";
     inp.oninput = () => { p.nome = inp.value; sugerir(p, sug); };
     nm.append(l, inp, sug);
     const seg = document.createElement("div"); seg.className = "seg";
+    if (trava){
+      const b = document.createElement("button"); b.type = "button"; b.className = "on"; b.textContent = "Não vai"; b.disabled = true;
+      const s = document.createElement("div"); s.className = "sub"; s.style.cssText = "flex:1 1 100%;margin:0;font-size:12px"; s.textContent = "Resposta já registrada. Para alterar, fale com os noivos.";
+      seg.appendChild(b); r.append(nm, seg, s); box.appendChild(r); return;
+    }
     [["Vai",true,false],["Não vai",false,false],["Ainda não sei",false,true]].forEach(([t,v,m]) => {
       const b = document.createElement("button"); b.type = "button"; b.textContent = t;
       if (p.vai === v && !!p.talvez === m) b.className = "on";
@@ -607,7 +633,10 @@ $("enviar").onclick = async () => {
     } else { whatsapp(d); }
     enviado = d; mostrarObrigado(d);
   } catch(e) {
-    $("err").textContent = "Não foi possível salvar agora. Tente novamente em instantes.";
+    if (e && /travad/i.test(String(e.message || ""))) {
+      await carregaTravados(familia); pessoas.forEach(p => { if (ehTravado(p)) { p.vai = false; p.talvez = false; } }); render();
+      $("err").textContent = "Alguém já respondeu que não vai e não pode ser alterado por aqui. Fale com os noivos.";
+    } else $("err").textContent = "Não foi possível salvar agora. Tente novamente em instantes.";
   }
   $("enviar").disabled = false;
 };
@@ -738,7 +767,7 @@ function buscar(){
     const solo = g.pessoas.length === 1 && norm(g.pessoas[0]) === norm(g.familia);
     b.textContent = solo ? curto(g.familia) : g.familia;
     if (!solo) { const s = document.createElement("small"); s.textContent = g.pessoas.map(curto).join(", "); b.appendChild(s); }
-    b.onclick = () => { $("fam").value = g.familia; pessoas = g.pessoas.map(n => ({nome:n, vai:true})); liberado = true; atualizaForm(); render(); $("busca2").value = ""; box.innerHTML = ""; $("fam").scrollIntoView({behavior:"smooth", block:"center"}); };
+    b.onclick = async () => { $("fam").value = g.familia; await carregaTravados(g.familia); pessoas = g.pessoas.map(n => { const p = {nome:n, vai:true}; if (ehTravado(p)) { p.vai = false; p.talvez = false; } return p; }); liberado = true; atualizaForm(); render(); $("busca2").value = ""; box.innerHTML = ""; $("fam").scrollIntoView({behavior:"smooth", block:"center"}); };
     box.appendChild(b);
   });
 }
