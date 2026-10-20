@@ -236,6 +236,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
   <svg class="fd fs2" viewBox="0 0 70 104"><use href="#sprig"/></svg>
   <section id="formSec">
     <h2>Confirme sua presença</h2>
+    <p class="sub hide" id="encerrado">As confirmações de presença foram encerradas. Se precisar falar com os noivos, entre em contato diretamente com eles.</p>
     <p class="sub" id="prazo">Adicione cada pessoa da sua família e marque quem vai.</p>
     <div class="find hide" id="findBox">
       <label for="busca2">Encontre seu nome na lista</label>
@@ -301,7 +302,8 @@ body[data-modelo=metade] .hex{inset:4% 0}
       <div class="cfg-grp">
         <h3>Confirmações</h3>
         <div class="cfg-grid">
-          <div class="field"><label for="cfgPrazo">Prazo para confirmar (opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
+          <div class="field"><label for="cfgPrazo">Prazo para confirmar (texto exibido, opcional)</label><input id="cfgPrazo" placeholder="Ex.: até 01 de novembro" autocomplete="off"></div>
+          <div class="field"><label for="cfgFecha">Encerrar confirmações em (opcional)</label><input id="cfgFecha" type="date"><p class="sub" style="margin:6px 0 0;font-size:12px">Depois do fim deste dia, ninguém mais consegue confirmar ou alterar a resposta. Deixe vazio para nunca encerrar.</p></div>
           <div class="field"><label for="cfgZap">WhatsApp dos noivos (opcional, só números com DDI)</label><input id="cfgZap" placeholder="Ex.: 5574999999999" inputmode="numeric" autocomplete="off"></div>
         </div>
       </div>
@@ -381,13 +383,27 @@ const C = {
   cidade: "Cidade, UF",
   mapa: "https://maps.app.goo.gl/QECs1TYgHhq267C58",  // link do Google Maps do local
   prazo: "",            // ex.: "até 01 de novembro"
+  fecha: "",            // data limite real (AAAA-MM-DD); depois dela o site não aceita mais confirmações
   whatsapp: ""          // opcional, só números com DDI: 5574999999999
 };
 // --------------------
 const $ = id => document.getElementById(id);
 let pessoas = [{nome:"", vai:true}];
 let enviado = null, convidados = [], vinculos = [], liberado = false;
-function atualizaForm(){ $("restoForm").classList.toggle("hide", convidados.length > 0 && !liberado); }
+// Encerra no fim do dia escolhido (horário do aparelho do convidado)
+function confirmacoesEncerradas(){
+  const m = String(C.fecha || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return false;
+  return new Date() >= new Date(+m[1], +m[2] - 1, +m[3] + 1);
+}
+function atualizaForm(){
+  const enc = confirmacoesEncerradas();
+  $("encerrado").classList.toggle("hide", !enc);
+  $("prazo").classList.toggle("hide", enc);
+  $("findBox").classList.toggle("hide", enc || !convidados.length);
+  $("restoForm").classList.toggle("hide", enc || (convidados.length > 0 && !liberado));
+  $("editar").classList.toggle("hide", enc);
+}
 function setTab(t){ const adm = t === "admin", fot = t === "fotos", fora = adm || fot;
   $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
   $("heroSec").classList.toggle("hide", fora); $("adminSec").classList.toggle("hide", !adm); $("fotosSec").classList.toggle("hide", !fot);
@@ -429,10 +445,11 @@ function atualizaContador(){
   box.innerHTML = [[dias,"Dias"],[hrs,"Horas"],[min,"Min"],[seg,"Seg"]].map(([n,t]) => "<div><b>" + String(n).padStart(2,"0") + "</b><span>" + t + "</span></div>").join("");
 }
 atualizaContador(); setInterval(atualizaContador, 1000);
-const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["mapa","cfgMapa"],["prazo","cfgPrazo"],["whatsapp","cfgZap"]];
+setInterval(atualizaForm, 60000);
+const CFG = [["noivos","cfgNoivos"],["data","cfgData"],["hora","cfgHora"],["local","cfgLocal"],["cidade","cfgCidade"],["mapa","cfgMapa"],["prazo","cfgPrazo"],["fecha","cfgFecha"],["whatsapp","cfgZap"]];
 function aplicarCfg(c){
   CFG.forEach(([k,id]) => { if (typeof c[k] === "string") C[k] = c[k]; });
-  desenhaHero();
+  desenhaHero(); atualizaForm();
   CFG.forEach(([k,id]) => { const el = $(id); if (el && document.activeElement !== el) el.value = C[k] || ""; });
   if (Array.isArray(c.fotos)) FOTOS = c.fotos.filter(f => typeof f === "string" && f.startsWith("data:image/"));
   if (typeof c.veu === "number") VEU = c.veu;
@@ -575,6 +592,7 @@ function whatsapp(d){
 }
 
 $("enviar").onclick = async () => {
+  if (confirmacoesEncerradas()) { atualizaForm(); return; }
   const lista = pessoas.map(p => ({nome:p.nome.trim(), vai:p.vai, ...(p.talvez ? {talvez:true} : {})})).filter(p => p.nome);
   const familia = $("fam").value.trim() || (lista[0] ? lista[0].nome : "");
   $("err").textContent = "";
