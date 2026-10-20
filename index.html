@@ -94,6 +94,8 @@ textarea{resize:vertical;min-height:64px}
 .btn:disabled{opacity:.5;cursor:default}
 .err{color:#b4533c;font-size:14px;min-height:20px;margin-top:12px;text-align:center}
 .done{text-align:center;padding:24px 0}
+.done .sub:empty{display:none}
+#doneObs{margin-top:10px}
 .hide{display:none}
 .admin{padding-top:24px}
 .tabs{display:flex;flex-wrap:wrap;gap:4px 22px;justify-content:center;margin-bottom:8px;padding-right:0}
@@ -102,7 +104,7 @@ textarea{resize:vertical;min-height:64px}
 .tabs button.on{color:var(--fg);border-bottom-color:var(--gold)}
 .filters{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px}
 .filters input{flex:1;min-width:180px}
-.stats{display:flex;gap:28px;margin:18px 0 28px}
+.stats{display:flex;flex-wrap:wrap;gap:18px 28px;margin:18px 0 28px}
 .stats b{display:block;font:400 34px "Cormorant Garamond",Georgia,serif;color:var(--gold)}
 .stats span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
 .fam{padding:14px 0;border-bottom:1px solid var(--line)}
@@ -252,6 +254,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
   <section id="doneSec" class="done hide">
     <h2>Obrigado!</h2>
     <p class="sub" id="doneTxt"></p>
+    <p class="sub" id="doneObs"></p>
     <button class="link" id="editar" type="button">Alterar minha resposta</button>
   </section>
 
@@ -268,7 +271,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
 
   <section id="adminSec" class="admin hide">
     <h2>Painel dos noivos</h2>
-    <div class="stats"><div><b id="sVai">0</b><span>Vão</span></div><div><b id="sNao">0</b><span>Não vão</span></div><div><b id="sFam">0</b><span>Famílias</span></div></div>
+    <div class="stats"><div><b id="sVai">0</b><span>Vão</span></div><div><b id="sNao">0</b><span>Não vão</span></div><div><b id="sTal">0</b><span>Ainda não sabem</span></div><div><b id="sFam">0</b><span>Famílias</span></div></div>
     <div class="filters"><input id="busca" placeholder="Buscar família ou nome" autocomplete="off"><div class="seg" id="filtro"></div></div>
     <div id="lista"></div>
     <button class="link" id="csv" type="button" style="margin-top:20px">Baixar planilha (CSV)</button>
@@ -524,10 +527,10 @@ function render(){
     inp.oninput = () => { p.nome = inp.value; sugerir(p, sug); };
     nm.append(l, inp, sug);
     const seg = document.createElement("div"); seg.className = "seg";
-    [["Vai",true],["Não vai",false]].forEach(([t,v]) => {
+    [["Vai",true,false],["Não vai",false,false],["Ainda não sei",false,true]].forEach(([t,v,m]) => {
       const b = document.createElement("button"); b.type = "button"; b.textContent = t;
-      if (p.vai === v) b.className = "on";
-      b.onclick = () => { p.vai = v; render(); };
+      if (p.vai === v && !!p.talvez === m) b.className = "on";
+      b.onclick = () => { p.vai = v; p.talvez = m; render(); };
       seg.appendChild(b);
     });
     r.append(nm, seg);
@@ -538,20 +541,41 @@ function render(){
 render(); atualizaForm();
 
 function mostrarObrigado(d){
+  const nome1 = p => String(p.nome).trim().split(/\s+/)[0];
+  const juntar = a => a.length > 1 ? a.slice(0,-1).join(", ") + " e " + a[a.length-1] : a[0] || "";
   const vao = d.pessoas.filter(p => p.vai).length;
-  $("doneTxt").textContent = vao ? "Sua presença está confirmada (" + vao + (vao === 1 ? " pessoa" : " pessoas") + "). Esperamos você!" : "Recebemos sua resposta. Sentiremos sua falta!";
+  const naoVao = d.pessoas.filter(p => !p.vai && !p.talvez).map(nome1);
+  const talvez = d.pessoas.filter(p => !p.vai && p.talvez).map(nome1);
+  const obs = [];
+  if (vao) {
+    const quando = C.data ? " no dia " + C.data + (C.hora ? " às " + C.hora : "") : (C.hora ? " às " + C.hora : "");
+    const onde = [C.local, C.cidade].filter(Boolean).join(", ");
+    const espera = (quando || onde) ? "Estaremos te esperando" + quando + (onde ? ", em " + onde : "") + "." : "Esperamos você!";
+    $("doneTxt").textContent = "Sua presença está confirmada (" + vao + (vao === 1 ? " pessoa" : " pessoas") + "). " + espera;
+  } else if (!naoVao.length) {
+    $("doneTxt").textContent = "Tudo bem! Anotamos que você ainda não sabe se poderá vir.";
+  } else if (!talvez.length) {
+    $("doneTxt").textContent = "Que pena que você não poderá estar conosco neste momento tão especial para nós.";
+  } else {
+    $("doneTxt").textContent = "Recebemos sua resposta.";
+  }
+  if (naoVao.length) obs.push(vao || talvez.length
+    ? "Sentiremos a falta de " + juntar(naoVao) + " neste momento tão especial para nós, mas " + (naoVao.length === 1 ? "saiba que você é uma pessoa muito importante" : "saibam que vocês são pessoas muito importantes") + " para nós."
+    : "Mas, se você recebeu este convite, saiba que você é uma pessoa muito importante para nós. Obrigado por nos responder!");
+  if (talvez.length) obs.push((vao || naoVao.length ? "Sobre " + juntar(talvez) + ": quando" : "Quando") + " tiver certeza, é só voltar a este convite, procurar seu nome e atualizar a resposta." + (C.prazo ? " Por favor, confirme " + C.prazo + "." : ""));
+  $("doneObs").textContent = obs.join(" ");
   $("formSec").classList.add("hide"); $("doneSec").classList.remove("hide");
 }
 $("editar").onclick = () => { enviado = null; $("doneSec").classList.add("hide"); $("formSec").classList.remove("hide"); };
 
 function whatsapp(d){
-  const linhas = d.pessoas.map(p => "• " + p.nome + ": " + (p.vai ? "vai" : "não vai"));
+  const linhas = d.pessoas.map(p => "• " + p.nome + ": " + (p.vai ? "vai" : (p.talvez ? "ainda não sabe" : "não vai")));
   const txt = "Confirmação de presença — " + d.familia + "\n" + linhas.join("\n") + (d.mensagem ? "\n\n" + d.mensagem : "");
   window.open("https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(txt), "_blank");
 }
 
 $("enviar").onclick = async () => {
-  const lista = pessoas.map(p => ({nome:p.nome.trim(), vai:p.vai})).filter(p => p.nome);
+  const lista = pessoas.map(p => ({nome:p.nome.trim(), vai:p.vai, ...(p.talvez ? {talvez:true} : {})})).filter(p => p.nome);
   const familia = $("fam").value.trim() || (lista[0] ? lista[0].nome : "");
   $("err").textContent = "";
   if (!familia) return $("err").textContent = "Informe seu nome.";
@@ -704,18 +728,19 @@ $("busca2").oninput = buscar;
 
 // ---- Painel dos noivos ----
 let todas = [], filtro = "todos", busca = "";
-function passa(f, v, n){ const q = busca.trim().toLowerCase(); if (q && !(f.familia + " " + f.pessoas.map(p => p.nome).join(" ")).toLowerCase().includes(q)) return false; if (filtro === "vai") return v.length > 0; if (filtro === "nao") return n.length > 0; return true; }
+function passa(f, v, n, t){ const q = busca.trim().toLowerCase(); if (q && !(f.familia + " " + f.pessoas.map(p => p.nome).join(" ")).toLowerCase().includes(q)) return false; if (filtro === "vai") return v.length > 0; if (filtro === "nao") return n.length > 0; if (filtro === "talvez") return t.length > 0; return true; }
 function renderAdmin(){
-  let vai = 0, nao = 0;
+  let vai = 0, nao = 0, tal = 0;
   const L = $("lista"); L.innerHTML = "";
   todas.sort((a,b) => (b.criado||0) - (a.criado||0)).forEach(f => {
-    const v = f.pessoas.filter(p => p.vai).map(p => p.nome), n = f.pessoas.filter(p => !p.vai).map(p => p.nome);
-    vai += v.length; nao += n.length;
-    if (!passa(f, v, n)) return;
+    const v = f.pessoas.filter(p => p.vai).map(p => p.nome), n = f.pessoas.filter(p => !p.vai && !p.talvez).map(p => p.nome), t = f.pessoas.filter(p => !p.vai && p.talvez).map(p => p.nome);
+    vai += v.length; nao += n.length; tal += t.length;
+    if (!passa(f, v, n, t)) return;
     const d = document.createElement("div"); d.className = "fam";
     const h = document.createElement("h3"); h.textContent = f.familia; d.appendChild(h);
     if (v.length){ const p = document.createElement("p"); p.textContent = "Vão: " + v.join(", "); d.appendChild(p); }
     if (n.length){ const p = document.createElement("p"); p.textContent = "Não vão: " + n.join(", "); d.appendChild(p); }
+    if (t.length){ const p = document.createElement("p"); p.textContent = "Ainda não sabem: " + t.join(", "); d.appendChild(p); }
     if (f.mensagem){ const p = document.createElement("p"); p.className = "msg"; p.textContent = "“" + f.mensagem + "”"; d.appendChild(p); }
     let arm = false; const x = document.createElement("button"); x.className = "link"; x.type = "button"; x.textContent = "Remover"; x.style.marginTop = "6px";
     x.onclick = async () => { if (!arm){ arm = true; x.textContent = "Toque de novo para remover"; return; } await sb.from("rsvps").delete().eq("id", f.id); await carregaRsvps(); };
@@ -723,7 +748,7 @@ function renderAdmin(){
     L.appendChild(d);
   });
   if (!L.children.length){ const p = document.createElement("p"); p.className = "sub"; p.textContent = todas.length ? "Nenhum resultado." : "Nenhuma confirmação ainda."; L.appendChild(p); }
-  $("sVai").textContent = vai; $("sNao").textContent = nao; $("sFam").textContent = todas.length;
+  $("sVai").textContent = vai; $("sNao").textContent = nao; $("sTal").textContent = tal; $("sFam").textContent = todas.length;
 }
 
 // ---- Carga de dados (Supabase) ----
@@ -828,12 +853,12 @@ async function ativaAdmin(){
   });
   $("busca").oninput = e => { busca = e.target.value; renderAdmin(); };
   const fl = $("filtro");
-  const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
+  const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"],["talvez","Ainda não sabem"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
   desenhaFiltro();
   $("csv").onclick = () => {
     const q = v => '"' + String(v).replace(/"/g,'""') + '"';
     const rows = [["Família","Nome","Presença","Recado"].map(q).join(",")];
-    todas.forEach(f => f.pessoas.forEach(p => rows.push([f.familia, p.nome, p.vai ? "Vai" : "Não vai", f.mensagem||""].map(q).join(","))));
+    todas.forEach(f => f.pessoas.forEach(p => rows.push([f.familia, p.nome, p.vai ? "Vai" : (p.talvez ? "Ainda não sabe" : "Não vai"), f.mensagem||""].map(q).join(","))));
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob(["\ufeff" + rows.join("\n")], {type:"text/csv;charset=utf-8"}));
     a.download = "confirmacoes.csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
