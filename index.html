@@ -79,6 +79,17 @@ main .meta{font-size:clamp(15px,calc(2.7vh / var(--z)),21px);line-height:1.7}
 @media (min-width:1500px){main{--z:1.25}}
 @media (min-width:1900px){main{--z:1.5}}
 @media (min-width:2300px){main{--z:1.8}}
+@media (min-width:900px){
+.side{padding-top:clamp(16px,calc(4vh / var(--z)),48px);padding-bottom:clamp(16px,calc(4vh / var(--z)),48px)}
+#formSec .sub{margin-bottom:16px}
+#formSec .field,#formSec .row{margin-bottom:16px}
+.pix{margin:14px 0 8px!important;padding-top:14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px}
+.pix h3{flex:1 1 100%;font-size:19px;margin:0}
+.pix p{flex:1 1 100%;margin:0 auto;max-width:none;font-size:12px;line-height:1.45}
+.pix-chave{margin:0;font-size:14px}
+.pix .grp-btn{margin:0;padding:7px 16px;font-size:12px}
+.pix .ok{flex:1 1 100%;min-height:0!important;margin:0!important}
+}
 .meta{color:var(--mut);font-size:clamp(17px,4.6vw,21px);line-height:1.9}
 h2{font:500 26px "Cormorant Garamond",Georgia,serif;margin:0 0 6px}
 .sub{color:var(--mut);font-size:14px;margin:0 0 28px}
@@ -196,6 +207,20 @@ body[data-modelo=metade] .hex{inset:4% 0}
 .cfg-save .ok{margin:0}
 .foot .link{font-size:12px;opacity:.7}
 #loginSec .field{margin-bottom:22px}
+.pix{margin:8px 0 22px;padding:26px 0 0;border-top:1px solid var(--line);text-align:center;position:relative}
+.pix::before{content:"";position:absolute;top:-4px;left:50%;width:7px;height:7px;margin-left:-3.5px;background:var(--gold);transform:rotate(45deg)}
+.pix h3{font:500 24px "Cormorant Garamond",Georgia,serif;letter-spacing:.02em;color:var(--fg);margin:0 0 8px}
+.pix p{margin:0 auto 14px;max-width:340px;font-size:14px;color:var(--mut)}
+.pix-chave{display:inline-block;font:400 15px Inter,sans-serif;color:var(--gold);word-break:break-all;margin-bottom:14px;padding-bottom:3px;border-bottom:1px solid var(--gold);user-select:all}
+.pix .grp-btn{display:block;margin:0 auto;padding:10px 22px;font-size:13px}
+#orientSec{padding:8px 0 24px}
+#orientSec h2{text-align:center;text-transform:uppercase;letter-spacing:.06em;font-size:24px;margin-bottom:4px}
+#orientSec .sub{text-align:center;margin-bottom:22px}
+.ori{border-top:1px solid var(--line);padding:14px 0}
+.ori h3{font:500 11px Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:0 0 6px}
+.ori p{margin:0;font-size:14px;line-height:1.6;color:var(--fg)}
+.ori-fim{border-top:1px solid var(--line);padding-top:16px;text-align:center;font-size:14px;color:var(--mut)}
+.ori-fim b{display:block;margin-top:4px;font:500 20px "Cormorant Garamond",Georgia,serif;color:var(--fg)}
 </style>
 </head>
 <body>
@@ -254,13 +279,40 @@ body[data-modelo=metade] .hex{inset:4% 0}
     <button class="btn" id="enviar" type="button">Enviar confirmação</button>
     <div class="err" id="err"></div>
     </div>
+    <div class="pix" style="margin-top:28px">
+      <h3>Presente para os noivos</h3>
+      <p>Se você não souber o que dar de presente, ficaremos muito felizes com um Pix. Sua presença já é o nosso maior presente.</p>
+      <div class="pix-chave">layladias335@gmail.com</div>
+      <button class="grp-btn pixCopiar" type="button">Copiar chave Pix</button>
+      <div class="ok" style="min-height:18px;font-size:13px;margin-top:8px"></div>
+    </div>
     <div style="text-align:center;margin-top:8px"><a class="mapa zapBtn" href="#" target="_blank" rel="noopener">Falar com os noivos</a></div>
+  </section>
+
+  <section id="orientSec" class="hide">
+    <h2>Algumas orientações especiais</h2>
+    <p class="sub">Com carinho, para o nosso grande dia.</p>
+    <p class="sub" style="text-align:left;margin-bottom:16px">Será uma alegria compartilhar esse momento tão especial com você. Para que tudo aconteça conforme planejamos, pedimos gentilmente a atenção a algumas orientações:</p>
+    <div class="ori"><h3>Confirmação de presença</h3><p>Pedimos que a confirmação seja realizada com, no mínimo, 15 dias de antecedência à data do casamento, para que possamos organizar cada detalhe com o devido cuidado.</p></div>
+    <div class="ori"><h3>Convite individual</h3><p>Nosso convite é pessoal e destinado exclusivamente às pessoas nele indicadas. Não será possível incluir acompanhantes além dos previamente convidados. Agradecemos a compreensão e o respeito a essa organização.</p></div>
+    <div class="ori"><h3>Pontualidade</h3><p>Pedimos a gentileza de chegar com antecedência ao horário indicado. A cerimônia terá início pontualmente, e contamos com a presença de todos desde o primeiro momento.</p></div>
+    <div class="ori"><h3>Traje</h3><p>Para preservar a estética minimalista e elegante da celebração, solicitamos traje social elegante. Pedimos também que seja respeitada a paleta de cores previamente orientada pelos noivos (não usar branco).</p></div>
+    <div class="ori"><h3>Bebidas e alimentos</h3><p>Não será permitida a entrada com bebidas ou alimentos externos. Informamos também que a celebração não contará com bebidas alcoólicas. Agradecemos a compreensão.</p></div>
+    <div class="ori-fim">Agradecemos por respeitarem nossas escolhas e por fazerem parte desse capítulo tão importante de nossas vidas.<b>Com carinho, os noivos</b></div>
+    <button class="btn" id="ciente" type="button" style="margin-top:22px">Compreendo</button>
   </section>
 
   <section id="doneSec" class="done hide">
     <h2>Obrigado!</h2>
     <p class="sub" id="doneTxt"></p>
     <p class="sub" id="doneObs"></p>
+    <div class="pix">
+      <h3>Presente para os noivos</h3>
+      <p>Se você não souber o que dar de presente, ficaremos muito felizes com um Pix. Sua presença já é o nosso maior presente.</p>
+      <div class="pix-chave">layladias335@gmail.com</div>
+      <button class="grp-btn pixCopiar" type="button">Copiar chave Pix</button>
+      <div class="ok" style="min-height:18px;font-size:13px;margin-top:8px"></div>
+    </div>
     <button class="link" id="editar" type="button">Alterar minha resposta</button>
     <div><a class="mapa zapBtn" href="#" target="_blank" rel="noopener">Falar com os noivos</a></div>
   </section>
@@ -427,6 +479,7 @@ function atualizaForm(){
 function setTab(t){ const adm = t === "admin", fot = t === "fotos", fora = adm || fot;
   $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
   $("heroSec").classList.toggle("hide", fora); $("adminSec").classList.toggle("hide", !adm); $("fotosSec").classList.toggle("hide", !fot);
+  $("orientSec").classList.add("hide");
   $("formSec").classList.toggle("hide", fora || !!enviado); $("doneSec").classList.toggle("hide", fora || !enviado); $("loginSec").classList.add("hide"); }
 
 function desenhaHero(){
@@ -611,9 +664,20 @@ function mostrarObrigado(d){
     : "Mas, se você recebeu este convite, saiba que você é uma pessoa muito importante para nós. Obrigado por nos responder!");
   if (talvez.length) obs.push((vao || naoVao.length ? "Sobre " + juntar(talvez) + ": quando" : "Quando") + " tiver certeza, é só voltar a este convite, procurar seu nome e atualizar a resposta." + (C.prazo ? " Por favor, confirme " + C.prazo + "." : ""));
   $("doneObs").textContent = obs.join(" ");
-  $("formSec").classList.add("hide"); $("doneSec").classList.remove("hide");
+  $("formSec").classList.add("hide");
+  if (vao) { $("doneSec").classList.add("hide"); $("orientSec").classList.remove("hide"); window.scrollTo({top:0, behavior:"smooth"}); }
+  else $("doneSec").classList.remove("hide");
 }
-$("editar").onclick = () => { enviado = null; $("doneSec").classList.add("hide"); $("formSec").classList.remove("hide"); };
+document.querySelectorAll(".pixCopiar").forEach(btn => btn.onclick = async () => {
+  const el = btn.previousElementSibling, m = btn.nextElementSibling, chave = el.textContent.trim();
+  try { await navigator.clipboard.writeText(chave); m.textContent = "Chave copiada!"; }
+  catch(_) {
+    const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    m.textContent = "Selecionamos a chave, é só copiar.";
+  }
+});
+$("ciente").onclick = () => { $("orientSec").classList.add("hide"); $("doneSec").classList.remove("hide"); window.scrollTo({top:0, behavior:"smooth"}); };
+$("editar").onclick = () => { enviado = null; $("orientSec").classList.add("hide"); $("doneSec").classList.add("hide"); $("formSec").classList.remove("hide"); };
 
 function whatsapp(d){
   const linhas = d.pessoas.map(p => "• " + p.nome + ": " + (p.vai ? "vai" : (p.talvez ? "ainda não sabe" : "não vai")));
