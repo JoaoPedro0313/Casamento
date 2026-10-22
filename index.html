@@ -79,17 +79,6 @@ main .meta{font-size:clamp(15px,calc(2.7vh / var(--z)),21px);line-height:1.7}
 @media (min-width:1500px){main{--z:1.25}}
 @media (min-width:1900px){main{--z:1.5}}
 @media (min-width:2300px){main{--z:1.8}}
-@media (min-width:900px){
-.side{padding-top:clamp(16px,calc(4vh / var(--z)),48px);padding-bottom:clamp(16px,calc(4vh / var(--z)),48px)}
-#formSec .sub{margin-bottom:16px}
-#formSec .field,#formSec .row{margin-bottom:16px}
-.pix{margin:14px 0 8px!important;padding-top:14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px}
-.pix h3{flex:1 1 100%;font-size:19px;margin:0}
-.pix p{flex:1 1 100%;margin:0 auto;max-width:none;font-size:12px;line-height:1.45}
-.pix-chave{margin:0;font-size:14px}
-.pix .grp-btn{margin:0;padding:7px 16px;font-size:12px}
-.pix .ok{flex:1 1 100%;min-height:0!important;margin:0!important}
-}
 .meta{color:var(--mut);font-size:clamp(17px,4.6vw,21px);line-height:1.9}
 h2{font:500 26px "Cormorant Garamond",Georgia,serif;margin:0 0 6px}
 .sub{color:var(--mut);font-size:14px;margin:0 0 28px}
@@ -213,6 +202,17 @@ body[data-modelo=metade] .hex{inset:4% 0}
 .pix p{margin:0 auto 14px;max-width:340px;font-size:14px;color:var(--mut)}
 .pix-chave{display:inline-block;font:400 15px Inter,sans-serif;color:var(--gold);word-break:break-all;margin-bottom:14px;padding-bottom:3px;border-bottom:1px solid var(--gold);user-select:all}
 .pix .grp-btn{display:block;margin:0 auto;padding:10px 22px;font-size:13px}
+@media (min-width:900px){
+.side{padding-top:clamp(16px,calc(4vh / var(--z)),48px);padding-bottom:clamp(16px,calc(4vh / var(--z)),48px)}
+#formSec .sub{margin-bottom:16px}
+#formSec .field,#formSec .row{margin-bottom:16px}
+.pix{margin:14px 0 8px!important;padding-top:14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px}
+.pix h3{flex:1 1 100%;font-size:19px;margin:0}
+.pix p{flex:1 1 100%;margin:0 auto;max-width:none;font-size:12px;line-height:1.45}
+.pix-chave{margin:0;font-size:14px}
+.pix .grp-btn{margin:0;padding:7px 16px;font-size:12px}
+.pix .ok{flex:1 1 100%;min-height:0!important;margin:0!important}
+}
 #orientSec{padding:8px 0 24px}
 #orientSec h2{text-align:center;text-transform:uppercase;letter-spacing:.06em;font-size:24px;margin-bottom:4px}
 #orientSec .sub{text-align:center;margin-bottom:22px}
@@ -221,6 +221,17 @@ body[data-modelo=metade] .hex{inset:4% 0}
 .ori p{margin:0;font-size:14px;line-height:1.6;color:var(--fg)}
 .ori-fim{border-top:1px solid var(--line);padding-top:16px;text-align:center;font-size:14px;color:var(--mut)}
 .ori-fim b{display:block;margin-top:4px;font:500 20px "Cormorant Garamond",Georgia,serif;color:var(--fg)}
+#orientSec h2{font-size:20px}
+#orientSec .sub{font-size:13px;line-height:1.5;margin-bottom:12px}
+.ori{padding:9px 0}
+.ori h3{font-size:10px;margin-bottom:3px}
+.ori p{font-size:12.5px;line-height:1.45}
+.ori-fim{font-size:12.5px;line-height:1.45;padding-top:10px}
+.ori-fim b{font-size:17px}
+#orientSec{position:fixed!important;inset:0;z-index:60!important;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(20,30,52,.55)}
+#orientSec.hide{display:none}
+.ori-card{width:100%;max-width:560px;max-height:calc(88vh / var(--z,1));overflow:auto;background:#fff;border-radius:18px;padding:24px 24px 0;box-shadow:0 20px 60px rgba(20,30,52,.35)}
+.ori-card .btn-wrap{position:sticky;bottom:0;background:#fff;padding:12px 0 20px}
 </style>
 </head>
 <body>
@@ -290,6 +301,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
   </section>
 
   <section id="orientSec" class="hide">
+  <div class="ori-card">
     <h2>Algumas orientações especiais</h2>
     <p class="sub">Com carinho, para o nosso grande dia.</p>
     <p class="sub" style="text-align:left;margin-bottom:16px">Será uma alegria compartilhar esse momento tão especial com você. Para que tudo aconteça conforme planejamos, pedimos gentilmente a atenção a algumas orientações:</p>
@@ -299,7 +311,8 @@ body[data-modelo=metade] .hex{inset:4% 0}
     <div class="ori"><h3>Traje</h3><p>Para preservar a estética minimalista e elegante da celebração, solicitamos traje social elegante. Pedimos também que seja respeitada a paleta de cores previamente orientada pelos noivos (não usar branco).</p></div>
     <div class="ori"><h3>Bebidas e alimentos</h3><p>Não será permitida a entrada com bebidas ou alimentos externos. Informamos também que a celebração não contará com bebidas alcoólicas. Agradecemos a compreensão.</p></div>
     <div class="ori-fim">Agradecemos por respeitarem nossas escolhas e por fazerem parte desse capítulo tão importante de nossas vidas.<b>Com carinho, os noivos</b></div>
-    <button class="btn" id="ciente" type="button" style="margin-top:22px">Compreendo</button>
+    <div class="btn-wrap"><button class="btn" id="ciente" type="button" style="margin:0">Compreendo</button></div>
+  </div>
   </section>
 
   <section id="doneSec" class="done hide">
