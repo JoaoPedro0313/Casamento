@@ -65,8 +65,8 @@ main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);align-ite
 .side>.fd{display:block}
 .fl2{-webkit-mask-image:linear-gradient(to right,transparent,#000 45%);mask-image:linear-gradient(to right,transparent,#000 45%)}
 .fl1{-webkit-mask-image:linear-gradient(to bottom left,#000 35%,transparent 95%);mask-image:linear-gradient(to bottom left,#000 35%,transparent 95%)}
-#adminSec,#fotosSec{grid-column:1/-1;grid-row:2;padding:24px 48px 48px}
-main:has(#adminSec:not(.hide)) .side,main:has(#fotosSec:not(.hide)) .side{display:none}
+#adminSec,#fotosSec,#gastosSec{grid-column:1/-1;grid-row:2;padding:24px 48px 48px}
+main:has(#adminSec:not(.hide)) .side,main:has(#fotosSec:not(.hide)) .side,main:has(#gastosSec:not(.hide)) .side{display:none}
 h1{font-size:clamp(40px,min(6vw,calc(11vh / var(--z))),84px);margin:calc(10px / var(--z)) 0 calc(16px / var(--z))}
 .hero{padding:clamp(20px,calc(5vh / var(--z)),56px) 44px clamp(16px,calc(4vh / var(--z)),44px)}
 main .meta{font-size:clamp(15px,calc(2.7vh / var(--z)),21px);line-height:1.7}
@@ -111,6 +111,14 @@ textarea{resize:vertical;min-height:64px}
 .stats{display:flex;flex-wrap:wrap;gap:18px 28px;margin:18px 0 28px}
 .stats b{display:block;font:400 34px "Cormorant Garamond",Georgia,serif;color:var(--gold)}
 .stats span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.gform{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px 18px;align-items:end;margin:6px 0 4px}
+.gform .field{margin:0}
+.gform .chk{display:flex;align-items:center;gap:8px;font:400 14px Inter,sans-serif;letter-spacing:0;text-transform:none;color:var(--fg);padding-bottom:8px;white-space:normal}
+.gform .chk input{width:auto}
+.gst{display:inline-block;font:500 10px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:2px}
+.gst.pago{background:#e3f1e6;color:#2f6b3f}.gst.pagar{background:#fbf0d6;color:#8a6414}.gst.comprar{background:#e9eff8;color:#3d5a8c}
+.gacts{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:4px}
+.gacts .link{margin:0}
 .fam{padding:14px 0;border-bottom:1px solid var(--line)}
 .fam h3{font-weight:500;font-size:15px;margin:0}
 .fam p{margin:2px 0 0;font-size:14px;color:var(--mut)}
@@ -260,7 +268,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
 <circle cx="4" cy="62" r="3.4" fill="#92a8d1"/><circle cx="14" cy="50" r="2.4" fill="#92a8d1"/></g>
 </defs></svg>
 <svg class="wave" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true"><path d="M0 140 C 200 70 420 70 620 125 S 1000 225 1200 150 S 1380 80 1440 100 L1440 240 L0 240 Z" fill="var(--blob)"/></svg>
-  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="fotos" type="button">Fotos</button><button data-t="sair" type="button">Sair</button></nav>
+  <nav class="tabs hide" id="tabs"><button class="on" data-t="convite" type="button">Convite</button><button data-t="admin" type="button">Painel dos noivos</button><button data-t="fotos" type="button">Fotos</button><button data-t="gastos" type="button">Gastos</button><button data-t="sair" type="button">Sair</button></nav>
   <section class="hero" id="heroSec">
     <div class="dec b1"></div><div class="dec b2"></div>
     <svg class="dec l1" viewBox="0 0 240 260" fill="none" stroke="#a8842f" stroke-width=".8" opacity=".55"><line x1="0" y1="140" x2="130" y2="0"/><line x1="0" y1="200" x2="215" y2="0"/><line x1="40" y1="260" x2="180" y2="40"/></svg>
@@ -360,7 +368,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
 
   <section id="adminSec" class="admin hide">
     <h2>Painel dos noivos</h2>
-    <div class="stats"><div><b id="sVai">0</b><span>Vão</span></div><div><b id="sNao">0</b><span>Não vão</span></div><div><b id="sTal">0</b><span>Ainda não sabem</span></div><div><b id="sFam">0</b><span>Famílias</span></div></div>
+    <div class="stats"><div><b id="sVai">0</b><span>Vão</span></div><div><b id="sNao">0</b><span>Não vão</span></div><div><b id="sTal">0</b><span>Ainda não sabem</span></div><div><b id="sFam">0</b><span>Famílias</span></div><div><b id="sPen">0</b><span>Sem resposta</span></div></div>
     <div class="filters"><input id="busca" placeholder="Buscar família ou nome" autocomplete="off"><div class="seg" id="filtro"></div></div>
     <div id="lista"></div>
     <button class="link" id="csv" type="button" style="margin-top:20px">Baixar planilha (CSV)</button>
@@ -429,6 +437,22 @@ body[data-modelo=metade] .hex{inset:4% 0}
       </div>
       <div class="ok" id="uplMsg"></div>
     </div>
+  </section>
+  <section id="gastosSec" class="admin hide">
+    <h2>Controle de gastos</h2>
+    <div class="stats"><div><b id="gTot">R$ 0,00</b><span>Previsto</span></div><div><b id="gPago">R$ 0,00</b><span>Já pago</span></div><div><b id="gFalta">R$ 0,00</b><span>Falta pagar</span></div><div><b id="gComprar">0</b><span>Itens a comprar</span></div></div>
+    <div class="gform">
+      <div class="field"><label for="gItem">Item</label><input id="gItem" placeholder="Ex.: Buffet" autocomplete="off"></div>
+      <div class="field"><label for="gCat">Categoria</label><input id="gCat" list="gCats" placeholder="Ex.: Festa" autocomplete="off"><datalist id="gCats"></datalist></div>
+      <div class="field"><label for="gValor">Valor total (R$)</label><input id="gValor" inputmode="decimal" placeholder="0,00" autocomplete="off"></div>
+      <div class="field"><label for="gPagoIn">Já pago (R$)</label><input id="gPagoIn" inputmode="decimal" placeholder="0,00" autocomplete="off"></div>
+      <label class="chk"><input type="checkbox" id="gComprado"> Já comprado/contratado</label>
+    </div>
+    <div class="field" style="margin-top:10px"><label for="gObs">Observação (opcional)</label><input id="gObs" autocomplete="off"></div>
+    <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px"><button class="btn" id="gSalvar" type="button" style="width:auto;padding:12px 28px">Adicionar item</button><button class="link" id="gCancelar" type="button" style="margin:0" hidden>Cancelar edição</button><span class="ok" id="gMsg"></span></div>
+    <div class="filters" style="margin-top:28px"><input id="gBusca" placeholder="Buscar item ou categoria" autocomplete="off"><div class="seg" id="gFiltro"></div></div>
+    <div id="gLista"></div>
+    <button class="link" id="gCsv" type="button" style="margin-top:20px">Baixar planilha (CSV)</button>
   </section>
   <section id="fotosSec" class="admin cfg hide">
     <h2>Fotos da tela inicial</h2>
@@ -506,9 +530,9 @@ function atualizaForm(){
   $("restoForm").classList.toggle("hide", enc || (convidados.length > 0 && !liberado));
   $("editar").classList.toggle("hide", enc);
 }
-function setTab(t){ const adm = t === "admin", fot = t === "fotos", fora = adm || fot;
+function setTab(t){ const adm = t === "admin", fot = t === "fotos", gas = t === "gastos", fora = adm || fot || gas;
   $("tabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.t === t));
-  $("heroSec").classList.toggle("hide", fora); $("adminSec").classList.toggle("hide", !adm); $("fotosSec").classList.toggle("hide", !fot);
+  $("heroSec").classList.toggle("hide", fora); $("adminSec").classList.toggle("hide", !adm); $("fotosSec").classList.toggle("hide", !fot); $("gastosSec").classList.toggle("hide", !gas);
   $("orientSec").classList.add("hide");
   $("formSec").classList.toggle("hide", fora || !!enviado); $("doneSec").classList.toggle("hide", fora || !enviado); $("loginSec").classList.add("hide"); }
 
@@ -874,9 +898,23 @@ $("busca2").oninput = buscar;
 // ---- Painel dos noivos ----
 let todas = [], filtro = "todos", busca = "";
 function passa(f, v, n, t){ const q = busca.trim().toLowerCase(); if (q && !(f.familia + " " + f.pessoas.map(p => p.nome).join(" ")).toLowerCase().includes(q)) return false; if (filtro === "vai") return v.length > 0; if (filtro === "nao") return n.length > 0; if (filtro === "talvez") return t.length > 0; return true; }
+function pendentes(){
+  const resp = new Set(todas.flatMap(f => f.pessoas.map(p => norm(p.nome))));
+  return (convidados || []).map(g => ({familia: g.familia, nomes: g.pessoas.filter(n => !resp.has(norm(n)))})).filter(x => x.nomes.length);
+}
 function renderAdmin(){
   let vai = 0, nao = 0, tal = 0;
   const L = $("lista"); L.innerHTML = "";
+  const pend = pendentes(); $("sPen").textContent = pend.reduce((a,x) => a + x.nomes.length, 0);
+  if (filtro === "pend") {
+    todas.forEach(f => f.pessoas.forEach(p => { if (p.vai) vai++; else if (p.talvez) tal++; else nao++; }));
+    $("sVai").textContent = vai; $("sNao").textContent = nao; $("sTal").textContent = tal; $("sFam").textContent = todas.length;
+    const q = busca.trim().toLowerCase();
+    const lista = pend.filter(x => !q || (x.familia + " " + x.nomes.join(" ")).toLowerCase().includes(q));
+    lista.forEach(x => { const d = document.createElement("div"); d.className = "fam"; const h = document.createElement("h3"); h.textContent = x.familia; d.appendChild(h); const p = document.createElement("p"); p.textContent = "Sem resposta: " + x.nomes.join(", "); d.appendChild(p); L.appendChild(d); });
+    if (!lista.length) { const p = document.createElement("p"); p.className = "sub"; p.textContent = !(convidados || []).length ? "A lista de convidados está vazia. Cadastre os grupos em Dados do convite." : q ? "Nenhum resultado." : "Todos os convidados da lista já responderam."; L.appendChild(p); }
+    return;
+  }
   todas.sort((a,b) => (b.criado||0) - (a.criado||0)).forEach(f => {
     const v = f.pessoas.filter(p => p.vai).map(p => p.nome), n = f.pessoas.filter(p => !p.vai && !p.talvez).map(p => p.nome), t = f.pessoas.filter(p => !p.vai && p.talvez).map(p => p.nome);
     vai += v.length; nao += n.length; tal += t.length;
@@ -909,6 +947,7 @@ async function carregaListas(){
   renderGrupos();
   $("findBox").classList.toggle("hide", !convidados.length); atualizaForm(); buscar();
   if (!(document.activeElement && document.activeElement.tagName === "INPUT")) render();
+  renderAdmin();
   $("uplMsg").textContent = ehDono && convidados.length ? convidados.length + " grupo(s) na lista." : "";
 }
 async function carregaRsvps(){
@@ -998,7 +1037,7 @@ async function ativaAdmin(){
   });
   $("busca").oninput = e => { busca = e.target.value; renderAdmin(); };
   const fl = $("filtro");
-  const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"],["talvez","Ainda não sabem"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
+  const desenhaFiltro = () => { fl.innerHTML = ""; [["todos","Todos"],["vai","Vão"],["nao","Não vão"],["talvez","Ainda não sabem"],["pend","Sem resposta"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (filtro === k) b.className = "on"; b.onclick = () => { filtro = k; desenhaFiltro(); renderAdmin(); }; fl.appendChild(b); }); };
   desenhaFiltro();
   $("csv").onclick = () => {
     const q = v => '"' + String(v).replace(/"/g,'""') + '"';
@@ -1008,8 +1047,70 @@ async function ativaAdmin(){
     a.href = URL.createObjectURL(new Blob(["\ufeff" + rows.join("\n")], {type:"text/csv;charset=utf-8"}));
     a.download = "confirmacoes.csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
+  ligaGastos(); carregaGastos();
   await carregaRsvps();
   sb.channel("rsvps-live").on("postgres_changes", {event:"*", schema:"public", table:"rsvps"}, carregaRsvps).subscribe();
+}
+
+// ---- Gastos (só os noivos) ----
+let gastos = [], gFiltro = "todos", gBusca = "", gEdit = null;
+const brl = v => Number(v || 0).toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+const numBR = s => { s = String(s || "").trim(); if (!s) return 0; if (s.includes(",")) s = s.replace(/\./g, "").replace(",", "."); const n = parseFloat(s); return isNaN(n) || n < 0 ? 0 : n; };
+function gStatus(g){ const v = +g.valor || 0, p = +g.pago || 0; if (v > 0 && p >= v) return "pago"; return (g.comprado || p > 0) ? "pagar" : "comprar"; }
+const gRot = {pago:"Pago", pagar:"A pagar", comprar:"A comprar"};
+function gMsg(t, erro){ const m = $("gMsg"); m.textContent = t || ""; m.style.color = erro ? "#a33" : ""; }
+function renderGastos(){
+  let tot = 0, pg = 0, falta = 0, nComprar = 0;
+  gastos.forEach(g => { const v = +g.valor || 0, p = +g.pago || 0; tot += v; pg += p; falta += Math.max(v - p, 0); if (gStatus(g) === "comprar") nComprar++; });
+  $("gTot").textContent = brl(tot); $("gPago").textContent = brl(pg); $("gFalta").textContent = brl(falta); $("gComprar").textContent = nComprar;
+  const dl = $("gCats"); dl.innerHTML = ""; [...new Set(gastos.map(g => g.categoria).filter(Boolean))].forEach(c => { const o = document.createElement("option"); o.value = c; dl.appendChild(o); });
+  const L = $("gLista"); L.innerHTML = "";
+  const q = gBusca.trim().toLowerCase(), ordem = {comprar:0, pagar:1, pago:2};
+  const vis = gastos.filter(g => (gFiltro === "todos" || gStatus(g) === gFiltro) && (!q || ((g.item || "") + " " + (g.categoria || "")).toLowerCase().includes(q)))
+    .sort((a, b) => ordem[gStatus(a)] - ordem[gStatus(b)] || (a.categoria || "").localeCompare(b.categoria || "") || (a.item || "").localeCompare(b.item || ""));
+  vis.forEach(g => {
+    const st = gStatus(g), v = +g.valor || 0, p = +g.pago || 0, d = document.createElement("div"); d.className = "fam";
+    const h = document.createElement("h3"); h.textContent = g.item; const b = document.createElement("span"); b.className = "gst " + st; b.textContent = gRot[st]; h.appendChild(b); d.appendChild(h);
+    const l1 = document.createElement("p"); l1.textContent = (g.categoria ? g.categoria + " · " : "") + "Total " + brl(v) + " · Pago " + brl(p) + (st === "pago" ? "" : " · Falta " + brl(Math.max(v - p, 0))); d.appendChild(l1);
+    if (g.obs){ const o = document.createElement("p"); o.className = "msg"; o.textContent = g.obs; d.appendChild(o); }
+    const ac = document.createElement("div"); ac.className = "gacts";
+    const mk = (t, fn) => { const x = document.createElement("button"); x.className = "link"; x.type = "button"; x.textContent = t; x.onclick = fn; ac.appendChild(x); return x; };
+    if (st !== "pago") mk("Marcar como pago", async () => { const r = await sb.from("gastos").update({pago: v, comprado: true}).eq("id", g.id); if (r.error) gMsg("Não foi possível salvar.", true); else await carregaGastos(); });
+    if (st === "comprar") mk("Marcar como comprado", async () => { const r = await sb.from("gastos").update({comprado: true}).eq("id", g.id); if (r.error) gMsg("Não foi possível salvar.", true); else await carregaGastos(); });
+    mk("Editar", () => { gEdit = g.id; $("gItem").value = g.item || ""; $("gCat").value = g.categoria || ""; $("gValor").value = v ? String(v).replace(".", ",") : ""; $("gPagoIn").value = p ? String(p).replace(".", ",") : ""; $("gComprado").checked = !!g.comprado; $("gObs").value = g.obs || ""; $("gSalvar").textContent = "Salvar alterações"; $("gCancelar").hidden = false; $("gItem").focus(); window.scrollTo({top:0, behavior:"smooth"}); });
+    let arm = false; const rm = mk("Remover", async () => { if (!arm){ arm = true; rm.textContent = "Toque de novo para remover"; return; } const r = await sb.from("gastos").delete().eq("id", g.id); if (r.error) gMsg("Não foi possível remover.", true); else await carregaGastos(); });
+    d.appendChild(ac); L.appendChild(d);
+  });
+  if (!L.children.length){ const p = document.createElement("p"); p.className = "sub"; p.textContent = gastos.length ? "Nenhum item nesse filtro." : "Nenhum item ainda. Adicione o primeiro acima."; L.appendChild(p); }
+}
+function gLimpa(){ gEdit = null; ["gItem","gCat","gValor","gPagoIn","gObs"].forEach(i => $(i).value = ""); $("gComprado").checked = false; $("gSalvar").textContent = "Adicionar item"; $("gCancelar").hidden = true; }
+async function carregaGastos(){
+  const { data, error } = await sb.from("gastos").select("id,item,categoria,valor,pago,comprado,obs,criado").order("criado", {ascending:true});
+  if (error){ gMsg("A tabela de gastos ainda não existe no Supabase. Rode o arquivo gastos.sql no SQL Editor.", true); return; }
+  gMsg(""); gastos = data; renderGastos();
+}
+function ligaGastos(){
+  const fl = $("gFiltro");
+  const desenha = () => { fl.innerHTML = ""; [["todos","Todos"],["comprar","A comprar"],["pagar","A pagar"],["pago","Pagos"]].forEach(([k,t]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; if (gFiltro === k) b.className = "on"; b.onclick = () => { gFiltro = k; desenha(); renderGastos(); }; fl.appendChild(b); }); };
+  desenha();
+  $("gBusca").oninput = e => { gBusca = e.target.value; renderGastos(); };
+  $("gCancelar").onclick = () => { gLimpa(); gMsg(""); };
+  $("gSalvar").onclick = async () => {
+    const item = $("gItem").value.trim(); if (!item) return gMsg("Escreva o nome do item.", true);
+    const valor = numBR($("gValor").value), pago = numBR($("gPagoIn").value);
+    const row = {item, categoria: $("gCat").value.trim(), valor, pago, comprado: $("gComprado").checked || pago > 0, obs: $("gObs").value.trim()};
+    const r = gEdit ? await sb.from("gastos").update(row).eq("id", gEdit) : await sb.from("gastos").insert(row);
+    if (r.error) return gMsg("Não foi possível salvar. Confira se a tabela de gastos foi criada.", true);
+    const ed = !!gEdit; gLimpa(); await carregaGastos(); gMsg(ed ? "Alterações salvas." : "Item adicionado.");
+  };
+  $("gCsv").onclick = () => {
+    const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+    const rows = [["Item","Categoria","Situação","Valor total","Pago","Falta pagar","Observação"].map(q).join(",")];
+    gastos.forEach(g => { const v = +g.valor || 0, p = +g.pago || 0; rows.push([g.item, g.categoria || "", gRot[gStatus(g)], v.toFixed(2).replace(".", ","), p.toFixed(2).replace(".", ","), Math.max(v - p, 0).toFixed(2).replace(".", ","), g.obs || ""].map(q).join(",")); });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob(["\ufeff" + rows.join("\n")], {type:"text/csv;charset=utf-8"}));
+    a.download = "gastos.csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
 }
 
 // ---- Início ----
