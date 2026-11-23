@@ -123,6 +123,15 @@ textarea{resize:vertical;min-height:64px}
 .fam h3{font-weight:500;font-size:15px;margin:0}
 .fam p{margin:2px 0 0;font-size:14px;color:var(--mut)}
 .fam .msg{font-style:italic}
+.lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));column-gap:36px}
+.lista>.sub{grid-column:1/-1}
+.lista .fam{padding:9px 0}
+.lista .fh{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.lista .fam h3{font-size:14px;letter-spacing:.02em}
+.lista .fam .link{font-size:12px;padding:0;flex:none;text-align:right;text-decoration:none;opacity:.65}
+.lista .fam .link:hover,.lista .fam .link:focus{opacity:1;text-decoration:underline}
+.lista .fam p{margin:1px 0 0;font-size:13px;line-height:1.45}
+.lista .fam p b{font-weight:500;color:var(--fg)}
 .find{margin-bottom:36px}
 .res{margin-top:6px}
 .res button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:12px 2px;font:inherit;color:var(--fg);cursor:pointer}
@@ -370,7 +379,7 @@ body[data-modelo=metade] .hex{inset:4% 0}
     <h2>Painel dos noivos</h2>
     <div class="stats"><div><b id="sVai">0</b><span>Vão</span></div><div><b id="sNao">0</b><span>Não vão</span></div><div><b id="sTal">0</b><span>Ainda não sabem</span></div><div><b id="sFam">0</b><span>Famílias</span></div><div><b id="sPen">0</b><span>Sem resposta</span></div></div>
     <div class="filters"><input id="busca" placeholder="Buscar família ou nome" autocomplete="off"><div class="seg" id="filtro"></div></div>
-    <div id="lista"></div>
+    <div id="lista" class="lista"></div>
     <button class="link" id="csv" type="button" style="margin-top:20px">Baixar planilha (CSV)</button>
 
     <div class="upl cfg">
@@ -911,7 +920,7 @@ function renderAdmin(){
     $("sVai").textContent = vai; $("sNao").textContent = nao; $("sTal").textContent = tal; $("sFam").textContent = todas.length;
     const q = busca.trim().toLowerCase();
     const lista = pend.filter(x => !q || (x.familia + " " + x.nomes.join(" ")).toLowerCase().includes(q));
-    lista.forEach(x => { const d = document.createElement("div"); d.className = "fam"; const h = document.createElement("h3"); h.textContent = x.familia; d.appendChild(h); const p = document.createElement("p"); p.textContent = "Sem resposta: " + x.nomes.join(", "); d.appendChild(p); L.appendChild(d); });
+    lista.forEach(x => { const d = document.createElement("div"); d.className = "fam"; const h = document.createElement("h3"); h.textContent = x.familia; d.appendChild(h); const p = document.createElement("p"); const lb = document.createElement("b"); lb.textContent = "Sem resposta: "; p.appendChild(lb); p.appendChild(document.createTextNode(x.nomes.join(", "))); d.appendChild(p); L.appendChild(d); });
     if (!lista.length) { const p = document.createElement("p"); p.className = "sub"; p.textContent = !(convidados || []).length ? "A lista de convidados está vazia. Cadastre os grupos em Dados do convite." : q ? "Nenhum resultado." : "Todos os convidados da lista já responderam."; L.appendChild(p); }
     return;
   }
@@ -920,14 +929,14 @@ function renderAdmin(){
     vai += v.length; nao += n.length; tal += t.length;
     if (!passa(f, v, n, t)) return;
     const d = document.createElement("div"); d.className = "fam";
-    const h = document.createElement("h3"); h.textContent = f.familia; d.appendChild(h);
-    if (v.length){ const p = document.createElement("p"); p.textContent = "Vão: " + v.join(", "); d.appendChild(p); }
-    if (n.length){ const p = document.createElement("p"); p.textContent = "Não vão: " + n.join(", "); d.appendChild(p); }
-    if (t.length){ const p = document.createElement("p"); p.textContent = "Ainda não sabem: " + t.join(", "); d.appendChild(p); }
+    const fh = document.createElement("div"); fh.className = "fh";
+    const h = document.createElement("h3"); h.textContent = f.familia; fh.appendChild(h);
+    let arm = false; const x = document.createElement("button"); x.className = "link"; x.type = "button"; x.textContent = "Remover";
+    x.onclick = async () => { if (!arm){ arm = true; x.textContent = "Confirmar?"; return; } await sb.from("rsvps").delete().eq("id", f.id); await carregaRsvps(); };
+    fh.appendChild(x); d.appendChild(fh);
+    const linha = (rot, nomes) => { if (!nomes.length) return; const p = document.createElement("p"); const lb = document.createElement("b"); lb.textContent = rot + ": "; p.appendChild(lb); p.appendChild(document.createTextNode(nomes.join(", "))); d.appendChild(p); };
+    linha("Vão", v); linha("Não vão", n); linha("Ainda não sabem", t);
     if (f.mensagem){ const p = document.createElement("p"); p.className = "msg"; p.textContent = "“" + f.mensagem + "”"; d.appendChild(p); }
-    let arm = false; const x = document.createElement("button"); x.className = "link"; x.type = "button"; x.textContent = "Remover"; x.style.marginTop = "6px";
-    x.onclick = async () => { if (!arm){ arm = true; x.textContent = "Toque de novo para remover"; return; } await sb.from("rsvps").delete().eq("id", f.id); await carregaRsvps(); };
-    d.appendChild(x);
     L.appendChild(d);
   });
   if (!L.children.length){ const p = document.createElement("p"); p.className = "sub"; p.textContent = todas.length ? "Nenhum resultado." : "Nenhuma confirmação ainda."; L.appendChild(p); }
